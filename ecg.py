@@ -64,10 +64,10 @@ t = np.linspace(0 , measurement_time , num_samples)
 frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 
 # desired width of the transition window
-width = 1
+width = 3
 
 # The cutoff frequency for the filter
-pass_Hz = [(0.4, 30)]
+pass_Hz = [(1, 30)]
 
 # use the firwin function with the kaiser window to find the taps of the FIR filter
 taps, num_taps = getTaps(num_samples, sample_rate, pass_Hz, width)
