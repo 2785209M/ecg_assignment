@@ -19,8 +19,8 @@ measurement_time = num_samples / sample_rate
 
 
 # number of samples, sampling_rate, frequency ranges to accept
-def getCoefficients(num_bins, sampling_rate, pass_bands, transition_width):
-    # 1. Calculate the number of coefficients
+def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
+    # 1. Calculate the number of taps
     # Formula: N = 3.3 * sampling_rate / transition_width
     num_taps = int(3.3 * (sampling_rate / transition_width))
     if num_taps % 2 == 0:
@@ -53,9 +53,9 @@ def getCoefficients(num_bins, sampling_rate, pass_bands, transition_width):
 
     # Apply a window function to smooth the sharp edges
     window = scipy.windows.hamming(num_taps)
-    coefficients = h_truncated * window
+    taps = h_truncated * window
 
-    return coefficients, num_taps
+    return taps, num_taps
 
 
 # Remove the DC shift by taking the mean of the ecg signal (== the DC shift) and shifting it doen by that value
@@ -73,8 +73,8 @@ width = 20
 # The cutoff frequency for the filter
 pass_Hz = [(0, 30)]
 
-# use the firwin function with the kaiser window to find the coefficients of the FIR filter
-taps, num_taps = getCoefficients(num_samples, sample_rate, pass_Hz, width)
+# use the firwin function with the kaiser window to find the taps of the FIR filter
+taps, num_taps = getTaps(num_samples, sample_rate, pass_Hz, width)
 
 # use filtfilt to filter x with the FIR filter
 filtered_ecg_signal = scipy.filtfilt(taps, 1, shifted_ecg_signal)
@@ -84,7 +84,7 @@ raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
 filtered_nyq_fft = np.abs(np.fft.fft(filtered_ecg_signal))[:nyq_samples]
 
 
-# Plot the FIR filter coefficients
+# Plot the FIR filter taps
 plt.figure()
 plt.plot(taps)
 plt.title("Impulse Response (%d taps)" % num_taps)
