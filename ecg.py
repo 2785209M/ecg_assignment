@@ -18,17 +18,26 @@ nyq_rate = sample_rate / 2
 measurement_time = num_samples / sample_rate
 
 
-# Order of filter, number of samples, sampling_rate, cutoff frequency
-def getCoefficients(num_taps, num_bins, sampling_rate, cutoff_frequency):
-    # Convert the cutoff frequency to a bin index
-    cutoff_bin = int(cutoff_frequency * (num_samples / sampling_rate))
-
-    # Define the ideal frequency Response
+# number of samples, sampling_rate, frequency ranges to accept
+def getCoefficients(num_bins, sampling_rate, pass_bands, transition_width):
+    # 1. Calculate the number of coefficients
+    # Formula: N = 3.3 * sampling_rate / transition_width
+    num_taps = int(3.3 * (sampling_rate / transition_width))
+    if num_taps % 2 == 0:
+        num_taps += 1 # Force an odd number of taps to maintain a centered peak
+    
+    # 2. Define the ideal frequency Response
     h_ideal = np.zeros(num_bins)
-    # Passband for positive frequencies
-    h_ideal[0 : cutoff_bin] = 1
-    # Passband for negative frequencies
-    h_ideal[num_bins - cutoff_bin : num_bins] = 1
+
+    # 3. Apply the pass bands
+    for low, high in pass_bands:
+        low = int(low * (num_bins / sampling_rate))
+        high = int(high * (num_bins / sampling_rate))
+
+        for i in range(low, high):
+            h_ideal[i] = 1
+            if i > 0: # ensure we don't try to mirror DC (0Hz)
+                h_ideal[num_bins - i] = 1
 
     # 2. Apply the IFFT to get the time-domain impulse response
     h_time = np.fft.ifft(h_ideal)
@@ -46,7 +55,8 @@ def getCoefficients(num_taps, num_bins, sampling_rate, cutoff_frequency):
     window = scipy.windows.hamming(num_taps)
     coefficients = h_truncated * window
 
-    return coefficients
+    return coefficients, num_taps
+
 
 # Remove the DC shift by taking the mean of the ecg signal (== the DC shift) and shifting it doen by that value
 shifted_ecg_signal = ecg_signal - np.mean(ecg_signal) # remove DC shift from the signal
@@ -58,21 +68,15 @@ t = np.linspace(0 , measurement_time , num_samples)
 frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 
 # desired width of the transition window
-width = 5/nyq_rate
-
-# The desired attenuation in the stop band, in dB
-ripple_dB = 60
-
-# Compute the order and Kaiser parameter for the FIR filter
-N, beta = scipy.kaiserord(ripple_dB, width)
+width = 20
 
 # The cutoff frequency for the filter
-cutoff_Hz = 40
+pass_Hz = [(0, 30)]
 
 # use the firwin function with the kaiser window to find the coefficients of the FIR filter
-taps = getCoefficients(31, num_samples, sample_rate, 30)
+taps, num_taps = getCoefficients(num_samples, sample_rate, pass_Hz, width)
 
-# use lfilter to filter x with the FIR filter
+# use filtfilt to filter x with the FIR filter
 filtered_ecg_signal = scipy.filtfilt(taps, 1, shifted_ecg_signal)
 
 # Generate frequency Spectrum
@@ -80,11 +84,10 @@ raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
 filtered_nyq_fft = np.abs(np.fft.fft(filtered_ecg_signal))[:nyq_samples]
 
 
-
 # Plot the FIR filter coefficients
 plt.figure()
 plt.plot(taps)
-plt.title("Impulse Response (%d taps)" % N)
+plt.title("Impulse Response (%d taps)" % num_taps)
 plt.grid(True)
 plt.savefig(IMAGES / "filter_coefficients.svg")
 
