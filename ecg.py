@@ -59,18 +59,20 @@ def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
 
 def convolution(signal, taps):
     # 1. Setup the output
-    output = [0.0] * len(signal)
-    
-    # 2. Slide across the signal (Time)
-    for i in range(len(signal)):
-        
-        # 3. Apply the filter weights (Taps)
-        for j in range(len(taps)):
-            if i - j < 0: # Boundary check to avoid looking past the beginning of the signal
-                break
-                
-            # 5. Multiply and accumulate
-            output[i] += signal[i - j] * taps[j]
+    length = len(signal) + len(taps) - 1
+
+    # 2. Find the frequency domain response of each function
+    signal_fft = np.fft.fft(signal, n = length)
+    taps_fft = np.fft.fft(taps, n=length)
+
+    # 3. Multiply the frequency domain
+    frequency_product = signal_fft * taps_fft
+
+    # 4. Take the real values of the time domain representation of the convolved product
+    output = np.real(np.fft.ifft(frequency_product))
+
+    # 5. Truncate the output array to undo the padding
+    output = output[:len(signal)]
             
     return output
 
