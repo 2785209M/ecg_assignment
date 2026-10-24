@@ -27,7 +27,7 @@ def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
         num_taps += 1 # Force an odd number of taps to maintain a centered peak
     
     # 2. Define the ideal frequency Response
-    h_ideal = np.zeros(num_bins)
+    H = np.zeros(num_bins)
 
     # 3. Apply the pass bands
     for low, high in pass_bands:
@@ -35,21 +35,22 @@ def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
         high = int(high * (num_bins / sampling_rate))
 
         for i in range(low, high):
-            h_ideal[i] = 1
+            H[i] = 1
             if i > 0: # ensure we don't try to mirror DC (0Hz)
-                h_ideal[num_bins - i] = 1
+                H[num_bins - i] = 1
 
     # 2. Apply the IFFT to get the time-domain impulse response
-    h_time = np.fft.ifft(h_ideal)
-    h_real = np.real(h_time)
+    h = np.real(np.fft.ifft(H))
 
     # 3. Shift Zero-frequency to center
-    h_shifted = np.fft.fftshift(h_real)
+    buffer = h.copy()
+    h[0:int(num_bins/2)] = buffer[int(num_bins/2):num_bins]
+    h[int(num_bins/2):num_bins] = buffer[0:int(num_bins/2)]
 
     # 4. Truncate to N taps and apply a cutoff window
     center_index = num_bins // 2
     half_index = num_taps // 2
-    h_truncated = h_shifted[center_index - half_index : center_index + half_index + 1]
+    h_truncated = h[center_index - half_index : center_index + half_index + 1]
 
     # Apply a window function to smooth the sharp edges
     window = scipy.windows.hamming(num_taps)
