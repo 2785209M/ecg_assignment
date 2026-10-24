@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import scipy.signal as scipy
 import numpy as np
 from pathlib import Path
 
@@ -53,10 +52,27 @@ def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
     h_truncated = h[center_index - half_index : center_index + half_index + 1]
 
     # Apply a window function to smooth the sharp edges
-    window = scipy.windows.hamming(num_taps)
+    window = np.hamming(num_taps)
     taps = h_truncated * window
 
     return taps, num_taps
+
+def convolution(signal, taps):
+    # 1. Setup the output
+    output = [0.0] * len(signal)
+    
+    # 2. Slide across the signal (Time)
+    for i in range(len(signal)):
+        
+        # 3. Apply the filter weights (Taps)
+        for j in range(len(taps)):
+            if i - j < 0: # Boundary check to avoid looking past the beginning of the signal
+                break
+                
+            # 5. Multiply and accumulate
+            output[i] += signal[i - j] * taps[j]
+            
+    return output
 
 # Create an x axis for the time domain with the correct number of samples in the measurement time
 t = np.linspace(0 , measurement_time , num_samples)
@@ -74,14 +90,14 @@ pass_Hz = [(1, 30)]
 taps, num_taps = getTaps(num_samples, sample_rate, pass_Hz, width)
 
 # use filtfilt to filter x with the FIR filter
-filtered_ecg_signal = scipy.filtfilt(taps, 1, ecg_signal)
+filtered_ecg_signal = convolution(ecg_signal, taps)
 
 # Generate frequency Spectrum
 raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
 filtered_nyq_fft = np.abs(np.fft.fft(filtered_ecg_signal))[:nyq_samples]
 
 
-# Plot the FIR filter taps
+# Plot the FIR Impulse Response
 plt.figure()
 plt.plot(taps)
 plt.title("Impulse Response (%d taps)" % num_taps)
