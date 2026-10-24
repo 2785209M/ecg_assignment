@@ -57,10 +57,6 @@ def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
 
     return taps, num_taps
 
-
-# Remove the DC shift by taking the mean of the ecg signal (== the DC shift) and shifting it doen by that value
-shifted_ecg_signal = ecg_signal - np.mean(ecg_signal) # remove DC shift from the signal
-
 # Create an x axis for the time domain with the correct number of samples in the measurement time
 t = np.linspace(0 , measurement_time , num_samples)
 
@@ -68,16 +64,16 @@ t = np.linspace(0 , measurement_time , num_samples)
 frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 
 # desired width of the transition window
-width = 20
+width = 1
 
 # The cutoff frequency for the filter
-pass_Hz = [(0, 30)]
+pass_Hz = [(0.4, 30)]
 
 # use the firwin function with the kaiser window to find the taps of the FIR filter
 taps, num_taps = getTaps(num_samples, sample_rate, pass_Hz, width)
 
 # use filtfilt to filter x with the FIR filter
-filtered_ecg_signal = scipy.filtfilt(taps, 1, shifted_ecg_signal)
+filtered_ecg_signal = scipy.filtfilt(taps, 1, ecg_signal)
 
 # Generate frequency Spectrum
 raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
