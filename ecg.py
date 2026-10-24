@@ -1,6 +1,10 @@
 import matplotlib.pyplot as plt
 import scipy.signal as scipy
 import numpy as np
+from pathlib import Path
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
 
 tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
 ecg_signal = tsv[:,8].copy()
@@ -30,35 +34,49 @@ ripple_dB = 60
 N, beta = scipy.kaiserord(ripple_dB, width)
 
 # The cutoff frequency for the filter
-cutoff_Hz = 10
+cutoff_Hz = 40
 
 # use the firwin function with the kaiser window to generate a lowpass FIR filter
 taps = scipy.firwin(N, cutoff_Hz/nyq_rate, window=('kaiser', beta))
 
 # use lfilter to filter x with the FIR filter
-filtered_ecg_signal = scipy.lfilter(taps, 1, ecg_signal)
+filtered_ecg_signal = scipy.filtfilt(taps, 1, ecg_signal)
 
 # Generate frequency Spectrum
-raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:num_samples // 2]
-filtered_nyq_fft = np.abs(np.fft.fft(filtered_ecg_signal))[:num_samples // 2]
+raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
+filtered_nyq_fft = np.abs(np.fft.fft(filtered_ecg_signal))[:nyq_samples]
 
+
+# Plot the FIR filter coefficients
 plt.figure()
+plt.plot(taps)
+plt.title("Filter coefficients (%d taps)" % N)
+plt.grid(True)
+plt.savefig(IMAGES / "filter_coefficients.svg")
+
+# Plot the time domain signals
+plt.figure()
+plt.title("ecg_raw_time_domain")
 plt.plot(t,ecg_signal)
-plt.savefig("ecg_raw_time_domain.png")
+plt.savefig(IMAGES / "ecg_raw_time_domain.svg")
 
 plt.figure()
+plt.title("ecg_filtered_time_domain")
 plt.plot(t, filtered_ecg_signal)
-plt.savefig("ecg_filtered_time_domain.png")
+plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
 
+# Plot the frequency domain signals
 plt.figure()
+plt.title("ecg_raw_frequency_domain")
 plt.plot(frequency, raw_nyq_fft)
 plt.grid(True)
-plt.savefig("ecg_raw_frequency_domain")
+plt.savefig(IMAGES / "ecg_raw_frequency_domain.svg")
 
 plt.figure()
+plt.title("ecg_filtered_frequency_domain")
 plt.plot(frequency, filtered_nyq_fft)
 plt.grid(True)
-plt.savefig("ecg_filtered_frequency_domain")
+plt.savefig(IMAGES / "ecg_filtered_frequency_domain.svg")
 
 plt.show()
 plt.close()
