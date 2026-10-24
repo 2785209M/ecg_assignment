@@ -61,7 +61,7 @@ def convolution(signal, taps):
     # 1. Setup the output
     length = len(signal) + len(taps) - 1
 
-    # 2. Find the frequency domain response of each function
+    # 2. Find the frequency domain response of each function (padding with zeros so they can be multiplied together)
     signal_fft = np.fft.fft(signal, n = length)
     taps_fft = np.fft.fft(taps, n=length)
 
