@@ -82,7 +82,7 @@ def convolution(signal, taps):
 width = 1
 
 # The cutoff frequency for the filter
-pass_Hz = [(0.8, 30)]
+pass_Hz = [(1.5, 45)]
 
 # get num_taps
 taps, num_taps = getTaps(sample_rate, pass_Hz, width)
