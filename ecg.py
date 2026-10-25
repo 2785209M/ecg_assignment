@@ -26,8 +26,8 @@ measurement_time = num_samples / sample_rate
 # number of samples, sampling_rate, frequency ranges to accept
 def getTaps(sampling_rate, pass_bands, transition_width):
     # 1. Calculate the number of taps
-    # Formula: N = 3.3 * sampling_rate / transition_width
-    num_taps = int(3.3 * (sampling_rate / transition_width))
+    # Formula: N = 3 * sampling_rate / transition_width
+    num_taps = int(3 * (sampling_rate / transition_width))
     
     # 2. Define the ideal frequency Response
     H = np.zeros(num_taps)
@@ -47,8 +47,8 @@ def getTaps(sampling_rate, pass_bands, transition_width):
 
     # 3. Shift Zero-frequency to center
     buffer = h.copy()
-    h[0:int(num_taps/2 + 1)] = buffer[int(num_taps/2):num_taps]
-    h[int(num_taps/2 + 1):num_taps] = buffer[0:int(num_taps/2)]
+    h[0:int(num_taps/2)] = buffer[int(num_taps/2):num_taps]
+    h[int(num_taps/2):num_taps] = buffer[0:int(num_taps/2)]
 
     # Apply a window function to smooth the sharp edges
     window = np.hamming(num_taps)
