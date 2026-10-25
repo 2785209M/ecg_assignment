@@ -9,6 +9,9 @@ IMAGES.mkdir(parents = True, exist_ok = True)
 tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
 ecg_signal = tsv[:,8].copy()
 
+
+# Defining Measurement Parameters
+
 num_samples = len(ecg_signal)
 sample_rate = 250 #(Hz)
 
@@ -18,40 +21,34 @@ nyq_rate = sample_rate / 2
 measurement_time = num_samples / sample_rate
 
 
+# Defining Functions
+
 # number of samples, sampling_rate, frequency ranges to accept
 def getTaps(sampling_rate, pass_bands, transition_width):
     # 1. Calculate the number of taps
     # Formula: N = 3.3 * sampling_rate / transition_width
     num_taps = int(3.3 * (sampling_rate / transition_width))
-    if num_taps % 2 == 0:
-        num_taps += 1 # Force an odd number of taps to maintain a centered peak
     
     # 2. Define the ideal frequency Response
-    num_bins = 2000
-    H = np.zeros(num_bins)
+    H = np.zeros(num_taps)
 
     # 3. Apply the pass bands
     for low, high in pass_bands:
-        low = int(low * (num_bins / sampling_rate))
-        high = int(high * (num_bins / sampling_rate))
+        low = int(low * (num_taps / sampling_rate))
+        high = int(high * (num_taps / sampling_rate))
 
         for i in range(low, high):
             H[i] = 1
             if i > 0: # ensure we don't try to mirror DC (0Hz)
-                H[num_bins - i] = 1
+                H[num_taps - i] = 1
 
     # 2. Apply the IFFT to get the time-domain impulse response
     h = np.real(np.fft.ifft(H))
 
     # 3. Shift Zero-frequency to center
     buffer = h.copy()
-    h[0:int(num_bins/2)] = buffer[int(num_bins/2):num_bins]
-    h[int(num_bins/2):num_bins] = buffer[0:int(num_bins/2)]
-
-    # 4. Truncate to N taps and apply a cutoff window
-    center_index = num_bins // 2
-    half_index = num_taps // 2
-    h = h[center_index - half_index : center_index + half_index + 1]
+    h[0:int(num_taps/2 + 1)] = buffer[int(num_taps/2):num_taps]
+    h[int(num_taps/2 + 1):num_taps] = buffer[0:int(num_taps/2)]
 
     # Apply a window function to smooth the sharp edges
     window = np.hamming(num_taps)
@@ -78,11 +75,8 @@ def convolution(signal, taps):
             
     return output
 
-# Create an x axis for the time domain with the correct number of samples in the measurement time
-t = np.linspace(0 , measurement_time , num_samples)
 
-# Generate the discrete frequency bins for the fourier transform
-frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
+# Performing FIR Filtering
 
 # desired width of the transition window
 width = 1
@@ -100,10 +94,19 @@ filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
+
+
+# Plotting Data
+
 # Generate frequency Spectrum
 raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
 filtered_nyq_fft = np.abs(np.fft.fft(filtered_ecg_signal))[:nyq_samples]
 
+# Create an x axis for the time domain with the correct number of samples in the measurement time
+t = np.linspace(0 , measurement_time , num_samples)
+
+# Generate the discrete frequency bins for the fourier transform
+frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 
 # Plot the FIR Impulse Response
 plt.figure()
