@@ -25,6 +25,7 @@ measurement_time = num_samples / sample_rate
 
 # number of samples, sampling_rate, frequency ranges to accept
 def getTaps(sampling_rate, pass_bands, transition_width):
+
     # 1. Calculate the number of taps
     # Formula: N = 3 * sampling_rate / transition_width
     num_taps = int(3 * (sampling_rate / transition_width))
@@ -42,10 +43,10 @@ def getTaps(sampling_rate, pass_bands, transition_width):
             if i > 0: # ensure we don't try to mirror DC (0Hz)
                 H[num_taps - i] = 1
 
-    # 2. Apply the IFFT to get the time-domain impulse response
+    # 4. Apply the IFFT to get the time-domain impulse response
     h = np.real(np.fft.ifft(H))
 
-    # 3. Shift Zero-frequency to center
+    # 5. Shift Zero-frequency to center
     buffer = h.copy()
     h[0:int(num_taps/2)] = buffer[int(num_taps/2):num_taps]
     h[int(num_taps/2):num_taps] = buffer[0:int(num_taps/2)]
@@ -57,6 +58,7 @@ def getTaps(sampling_rate, pass_bands, transition_width):
     return taps, num_taps
 
 def convolution(signal, taps):
+
     # 1. Setup the output
     length = len(signal) + len(taps) - 1
 
@@ -78,18 +80,17 @@ def convolution(signal, taps):
 
 # Performing FIR Filtering
 
-# desired width of the transition window
-width = 1
 
-# The cutoff frequency for the filter
-pass_Hz = [(1.5, 45)]
+width = 1 # desired width of the transition window
+pass_Hz = [(1.5, 45)] # The cutoff frequency for the filter
 
-# get num_taps
+# get the array of taps and number of taps (taps == coefficients)
 taps, num_taps = getTaps(sample_rate, pass_Hz, width)
 
 # use FIRfilter to filter x with the FIR filter
 filter = FIRfilter.FIRfilter(taps)
 
+# Simulate realtime filtering of the ECG
 filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
