@@ -18,7 +18,7 @@ measurement_time = num_samples / sample_rate
 
 
 # number of samples, sampling_rate, frequency ranges to accept
-def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
+def getTaps(sampling_rate, pass_bands, transition_width):
     # 1. Calculate the number of taps
     # Formula: N = 3.3 * sampling_rate / transition_width
     num_taps = int(3.3 * (sampling_rate / transition_width))
@@ -26,6 +26,7 @@ def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
         num_taps += 1 # Force an odd number of taps to maintain a centered peak
     
     # 2. Define the ideal frequency Response
+    num_bins = 2000
     H = np.zeros(num_bins)
 
     # 3. Apply the pass bands
@@ -49,11 +50,11 @@ def getTaps(num_bins, sampling_rate, pass_bands, transition_width):
     # 4. Truncate to N taps and apply a cutoff window
     center_index = num_bins // 2
     half_index = num_taps // 2
-    h_truncated = h[center_index - half_index : center_index + half_index + 1]
+    h = h[center_index - half_index : center_index + half_index + 1]
 
     # Apply a window function to smooth the sharp edges
     window = np.hamming(num_taps)
-    taps = h_truncated * window
+    taps = h * window
 
     return taps, num_taps
 
@@ -83,13 +84,13 @@ t = np.linspace(0 , measurement_time , num_samples)
 frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 
 # desired width of the transition window
-width = 3
+width = 2
 
 # The cutoff frequency for the filter
 pass_Hz = [(1, 30)]
 
 # use the firwin function with the kaiser window to find the taps of the FIR filter
-taps, num_taps = getTaps(num_samples, sample_rate, pass_Hz, width)
+taps, num_taps = getTaps(sample_rate, pass_Hz, width)
 
 # use filtfilt to filter x with the FIR filter
 filtered_ecg_signal = convolution(ecg_signal, taps)
