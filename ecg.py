@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
+import FIRfilter
 
 IMAGES = Path("images")
 IMAGES.mkdir(parents = True, exist_ok = True)
@@ -92,8 +93,12 @@ pass_Hz = [(0.8, 30)]
 # get num_taps
 taps, num_taps = getTaps(sample_rate, pass_Hz, width)
 
-# use filtfilt to filter x with the FIR filter
-filtered_ecg_signal = convolution(ecg_signal, taps)
+# use FIRfilter to filter x with the FIR filter
+filter = FIRfilter.FIRfilter(taps)
+
+filtered_ecg_signal = np.zeros(num_samples)
+for i in range(num_samples):
+    filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
 # Generate frequency Spectrum
 raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
