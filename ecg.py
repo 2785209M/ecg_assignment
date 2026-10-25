@@ -10,77 +10,52 @@ tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
 ecg_signal = tsv[:,8].copy()
 
 
-# Defining Measurement Parameters
-
-num_samples = len(ecg_signal)
-sample_rate = 250 #(Hz)
-
-nyq_samples = num_samples // 2
-nyq_rate = sample_rate / 2
-
-measurement_time = num_samples / sample_rate
-
-
 # Defining Functions
 
 # number of samples, sampling_rate, frequency ranges to accept
 def getTaps(sampling_rate, pass_bands, transition_width):
 
     # 1. Calculate the number of taps
-    # Formula: N = 3 * sampling_rate / transition_width
-    num_taps = int(3 * (sampling_rate / transition_width))
-    
-    # 2. Define the ideal frequency Response
-    H = np.zeros(num_taps)
+    # Formula: N = 3.3 * sampling_rate / transition_width
+    num_taps = int(3.3 * (sampling_rate / transition_width))
+    if num_taps % 2 == 0:
+        num_taps += 1 # Ensure num_taps is odd so there is a central value
 
-    # 3. Apply the pass bands
-    for low, high in pass_bands:
-        low = int(low * (num_taps / sampling_rate))
-        high = int(high * (num_taps / sampling_rate))
+    # 2. Define the impulse Response of the ideal frequency response from the pass_bands
+    h = np.zeros(num_taps)
+    m = (num_taps - 1) // 2
+    n = np.arange(-m, m + 1)
 
-        for i in range(low, high):
-            H[i] = 1
-            if i > 0: # ensure we don't try to mirror DC (0Hz)
-                H[num_taps - i] = 1
+    for f_low, f_high in pass_bands:
+        w1 = (f_low / sampling_rate) * 2 * np.pi
+        w2 = (f_high / sampling_rate) * 2 * np.pi
 
-    # 4. Apply the IFFT to get the time-domain impulse response
-    h = np.real(np.fft.ifft(H))
+        h_band = np.zeros(num_taps)
 
-    # 5. Shift Zero-frequency to center
-    buffer = h.copy()
-    h[0:int(num_taps/2)] = buffer[int(num_taps/2):num_taps]
-    h[int(num_taps/2):num_taps] = buffer[0:int(num_taps/2)]
+        # Use L' Hospital's rule to avoid dividing by zero at index M
+        h_band[m] = (w2 - w1) / np.pi
 
-    # Apply a window function to smooth the sharp edges
+        # Iterate from 0 to M-1, then from M + 1 to num_taps - 1, and apply the IFFT to each index
+        # IFFT Formula for pass-band filter: h(n) = 1/pi*n * [sin(w2 * n) - sin(w1 * n)]
+        for i in range(m):
+            h_band[i] = (1 / (n[i] * np.pi)) * (np.sin(w2 * n[i]) - np.sin(w1 * n[i]))
+        for i in range(m + 1, num_taps):
+            h_band[i] = (1 / (n[i] * np.pi)) * (np.sin(w2 * n[i]) - np.sin(w1 * n[i]))
+
+        # Principle of superposition - ensure pass_band ranges do not overlap to avoid signal distortion
+        h += h_band
+
+    # 3. Apply a window function to smooth the sharp edges
     window = np.hamming(num_taps)
     taps = h * window
 
     return taps, num_taps
 
-def convolution(signal, taps):
-
-    # 1. Setup the output
-    length = len(signal) + len(taps) - 1
-
-    # 2. Find the frequency domain response of each function (padding with zeros so they can be multiplied together)
-    signal_fft = np.fft.fft(signal, n = length)
-    taps_fft = np.fft.fft(taps, n=length)
-
-    # 3. Multiply the frequency domain
-    frequency_product = signal_fft * taps_fft
-
-    # 4. Take the real values of the time domain representation of the convolved product
-    output = np.real(np.fft.ifft(frequency_product))
-
-    # 5. Truncate the output array to undo the padding
-    output = output[:len(signal)]
-            
-    return output
-
 
 # Performing FIR Filtering
 
-
+num_samples = len(ecg_signal) # Number of Samples in ECG signal
+sample_rate = 250 # Sampling rate of ECG signal (Hz)
 width = 1 # desired width of the transition window
 pass_Hz = [(1.5, 45)] # The cutoff frequency for the filter
 
@@ -98,6 +73,10 @@ for i in range(num_samples):
 
 
 # Plotting Data
+
+nyq_samples = num_samples // 2 # Number of Samples below Nyquist frequency
+nyq_rate = sample_rate / 2 # Nyquist Adjusted Sampling Rate
+measurement_time = num_samples / sample_rate
 
 # Generate frequency Spectrum
 raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
