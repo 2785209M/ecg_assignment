@@ -23,11 +23,14 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     else:
         beta = 0
 
-    filt_order = int((A - 8) / (2.285 * (transition_width / sampling_rate)))
+    num_taps = int((A - 8) / (2.285 * 2 * np.pi * (transition_width / sampling_rate)))
 
+    if num_taps % 2 == 0:
+        num_taps += 1 # Ensure the filter order is odd so there is a central value
+    
     # 2. Define the impulse Response of the ideal frequency response from stop_bands
-    m = (filt_order - 1) // 2
-    h = np.zeros(filt_order)
+    m = (num_taps - 1) // 2
+    h = np.zeros(num_taps)
     h[m] = 1 # Initialize h as an all-pass filter (unit impulse)
     n = np.arange(-m, m + 1)
 
@@ -44,11 +47,15 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
         # WARNING: Ensure stop-band ranges don't overlap to avoid signal distortion
         h -= h_band
 
-    # 3. Apply a window function to smooth the sharp edges
-    window = np.kaiser(filt_order, beta)
-    taps = h * window
+    # 3. Calculate the Kaiser Window function using a modified bessel function of the first kind
+    num = np.i0(beta * np.sqrt(1 - (n / m) ** 2))
+    den = np.i0(np.array([beta]))[0]
+    kaiser_window = num / den
 
-    return taps, filt_order
+    # 4. Convolve our functions by multiplying element-wise in the time domain
+    taps = h * kaiser_window
+
+    return taps, num_taps
 
 
 # Performing FIR Filtering
@@ -60,7 +67,7 @@ pass_Hz = [(0, 1), (40, sample_rate // 2)] # The cutoff frequency for the filter
 A = 30 # stopband attenuation
 
 # get the array of taps and number of taps (taps == coefficients)
-taps, filt_order = getTaps(sample_rate, pass_Hz, A, width)
+taps, num_taps = getTaps(sample_rate, pass_Hz, A, width)
 
 # use FIRfilter to filter x with the FIR filter
 filter = FIRfilter.FIRfilter(taps)
@@ -71,7 +78,7 @@ for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
 #Simulate realtime adaptive filtering of the ECG
-adaptivefilter = FIRfilter.FIRfilter(np.zeros(filt_order)) # Initialize adaptive filter with zero coefficients
+adaptivefilter = FIRfilter.FIRfilter(np.zeros(num_taps)) # Initialize adaptive filter with zero coefficients
 
 adaptive_filtered_ecg_signal = np.zeros(num_samples)
 #Use 50Hz as the signal for adaptive filtering (to be filtered out)
@@ -101,7 +108,7 @@ frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 # Plot the FIR Impulse Response
 plt.figure()
 plt.plot(taps)
-plt.title("Impulse Response (%d taps)" % filt_order)
+plt.title("Impulse Response (%d taps)" % num_taps)
 plt.grid(True)
 plt.savefig(IMAGES / "filter_coefficients.svg")
 
