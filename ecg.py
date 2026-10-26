@@ -12,21 +12,22 @@ ecg_signal = tsv[:,8].copy()
 
 # Defining Functions
 
-# number of samples, sampling_rate, frequency ranges to accept
-def getTaps(sampling_rate, pass_bands, transition_width):
+# sampling_rate, frequency ranges to accept, width of transition window
+def getTaps(sampling_rate, stop_bands, transition_width):
 
-    # 1. Calculate the number of taps
+    # 1. Calculate the number of taps (General formula for a Hamming Window)
     # Formula: N = 3.3 * sampling_rate / transition_width
     num_taps = int(3.3 * (sampling_rate / transition_width))
     if num_taps % 2 == 0:
         num_taps += 1 # Ensure num_taps is odd so there is a central value
 
-    # 2. Define the impulse Response of the ideal frequency response from the pass_bands
-    h = np.zeros(num_taps)
+    # 2. Define the impulse Response of the ideal frequency response from the stop_bands
     m = (num_taps - 1) // 2
+    h = np.zeros(num_taps)
+    h[m] = 1 # Initialize h as an all-pass filter (unit impulse)
     n = np.arange(-m, m + 1)
 
-    for f_low, f_high in pass_bands:
+    for f_low, f_high in stop_bands:
         w1 = (f_low / sampling_rate) * 2 * np.pi
         w2 = (f_high / sampling_rate) * 2 * np.pi
 
@@ -43,7 +44,7 @@ def getTaps(sampling_rate, pass_bands, transition_width):
             h_band[i] = (1 / (n[i] * np.pi)) * (np.sin(w2 * n[i]) - np.sin(w1 * n[i]))
 
         # Principle of superposition - ensure pass_band ranges do not overlap to avoid signal distortion
-        h += h_band
+        h -= h_band
 
     # 3. Apply a window function to smooth the sharp edges
     window = np.hamming(num_taps)
@@ -57,7 +58,7 @@ def getTaps(sampling_rate, pass_bands, transition_width):
 num_samples = len(ecg_signal) # Number of Samples in ECG signal
 sample_rate = 250 # Sampling rate of ECG signal (Hz)
 width = 1 # desired width of the transition window
-pass_Hz = [(1.5, 45)] # The cutoff frequency for the filter
+pass_Hz = [(0, 1), (40, sample_rate // 2)] # The cutoff frequency for the filter
 
 # get the array of taps and number of taps (taps == coefficients)
 taps, num_taps = getTaps(sample_rate, pass_Hz, width)
