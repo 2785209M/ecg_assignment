@@ -30,15 +30,8 @@ class FIRfilter:
             :param mu: The step size for adaptation.
             :return: The filtered signal.
             """
-            self.delay_line.appendleft(signal)
-            result = 0
-    
-            for i in range(self.num_taps):
-                if i < len(self.delay_line):
-                    result += self.delay_line[i] * self.coefficients[i]
-                else:
-                    result += 0
-    
+            result = self.dofilter(signal)
+
             # Update coefficients using LMS algorithm
             error = noise - result
             for i in range(self.num_taps):
