@@ -32,7 +32,6 @@ def getTaps(sampling_rate, stop_bands, transition_width):
         f1 = f1 / sampling_rate
         f2 = f2 / sampling_rate
 
-        # Iterate from 0 to M-1, then from M + 1 to num_taps - 1, and apply the IFFT to each index
         # IFFT Formula for bandpass filter: h(n) = 1/pi*n * [sin(w2 * n) - sin(w1 * n)]
         # Simplified using sinc function: h(n) = [2 * f2 * sinc (2 * f2 * n)] - [2 * f1 * sinc (2 * f1 * n)]
         h_band = 2 * f2 * np.sinc(2 * f2 * n) - (2 * f1 * np.sinc(2 * f1 * n))
