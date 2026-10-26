@@ -37,13 +37,14 @@ def getTaps(sampling_rate, stop_bands, transition_width):
         h_band[m] = (w2 - w1) / np.pi
 
         # Iterate from 0 to M-1, then from M + 1 to num_taps - 1, and apply the IFFT to each index
-        # IFFT Formula for pass-band filter: h(n) = 1/pi*n * [sin(w2 * n) - sin(w1 * n)]
+        # IFFT Formula for bandpass filter: h(n) = 1/pi*n * [sin(w2 * n) - sin(w1 * n)]
         for i in range(m):
             h_band[i] = (1 / (n[i] * np.pi)) * (np.sin(w2 * n[i]) - np.sin(w1 * n[i]))
         for i in range(m + 1, num_taps):
             h_band[i] = (1 / (n[i] * np.pi)) * (np.sin(w2 * n[i]) - np.sin(w1 * n[i]))
 
-        # Principle of superposition - ensure pass_band ranges do not overlap to avoid signal distortion
+        # Principle of superposition - subtract bandpass filter from allpass filter to create a bandstop filter
+        # Ensure stop-band ranges don't overlap to avoid signal distortion
         h -= h_band
 
     # 3. Apply a window function to smooth the sharp edges
