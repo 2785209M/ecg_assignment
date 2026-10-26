@@ -65,7 +65,16 @@ filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
+#Simulate realtime adaptive filtering of the ECG
+adaptivefilter = FIRfilter.FIRfilter(np.zeros(num_taps)) # Initialize adaptive filter with zero coefficients
 
+adaptive_filtered_ecg_signal = np.zeros(num_samples)
+#Use 50Hz as the signal for adaptive filtering (to be filtered out)
+fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
+
+# Use the filtered ECG signal as the noise reference for adaptive filtering
+for i in range(num_samples):
+    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], mu=0.001)   
 
 # Plotting Data
 
@@ -100,6 +109,11 @@ plt.figure()
 plt.title("ecg_filtered_time_domain")
 plt.plot(t, filtered_ecg_signal)
 plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
+
+plt.figure()
+plt.title("ecg_adaptive_filtered_time_domain")
+plt.plot(t, adaptive_filtered_ecg_signal)
+plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
 
 # Plot the frequency domain signals
 plt.figure()

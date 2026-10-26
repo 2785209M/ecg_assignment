@@ -45,4 +45,4 @@ class FIRfilter:
                 if i < len(self.delay_line):
                     self.coefficients[i] += mu * error * self.delay_line[i]
     
-            return result
+            return error
