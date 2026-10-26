@@ -23,6 +23,7 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     else:
         beta = 0
 
+    # Formula for num_taps of Kaiser window: (A - 8) / (2.285 * d_omega), where d_omega is the normalized transition width in radians
     num_taps = int((A - 8) / (2.285 * 2 * np.pi * (transition_width / sampling_rate)))
 
     if num_taps % 2 == 0:
@@ -48,9 +49,8 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
         h -= h_band
 
     # 3. Calculate the Kaiser Window function using a modified bessel function of the first kind
-    num = np.i0(beta * np.sqrt(1 - (n / m) ** 2))
-    den = np.i0(np.array([beta]))[0]
-    kaiser_window = num / den
+    # Kaiser window formula: I0 [beta * sqrt(1 - {(n - alpha) / alpha} ** 2)] / I0 * beta
+    kaiser_window = np.i0(beta * np.sqrt(1 - (n / m) ** 2)) / np.i0(np.array([beta]))[0]
 
     # 4. Window the stop-band filter with our kaiser window
     taps = h * kaiser_window
