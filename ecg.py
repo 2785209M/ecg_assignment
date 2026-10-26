@@ -12,7 +12,7 @@ ecg_signal = tsv[:,8].copy()
 
 # Defining Functions
 
-# sampling_rate, frequency ranges to accept, width of transition window
+# sampling_rate, frequency ranges to block, desired stop-band attenuation, width of transition window
 def getTaps(sampling_rate, stop_bands, A, transition_width):
 
     # 1. Calculate the stopband attenuation and filter order for the kaiser window
@@ -26,7 +26,7 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     num_taps = int((A - 8) / (2.285 * 2 * np.pi * (transition_width / sampling_rate)))
 
     if num_taps % 2 == 0:
-        num_taps += 1 # Ensure the filter order is odd so there is a central value
+        num_taps += 1 # Ensure the number of taps is odd so the filter order will be even
     
     # 2. Define the impulse Response of the ideal frequency response from stop_bands
     m = (num_taps - 1) // 2
@@ -52,7 +52,7 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     den = np.i0(np.array([beta]))[0]
     kaiser_window = num / den
 
-    # 4. Convolve our functions by multiplying element-wise in the time domain
+    # 4. Window the stop-band filter with our kaiser window
     taps = h * kaiser_window
 
     return taps, num_taps
@@ -63,11 +63,11 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
 num_samples = len(ecg_signal) # Number of Samples in ECG signal
 sample_rate = 250 # Sampling rate of ECG signal (Hz)
 width = 1 # desired width of the transition window
-pass_Hz = [(0, 1), (40, sample_rate // 2)] # The cutoff frequency for the filter
+stop_Hz = [(0, 1), (40, sample_rate // 2)] # The cutoff frequency for the filter
 A = 30 # stopband attenuation
 
 # get the array of taps and number of taps (taps == coefficients)
-taps, num_taps = getTaps(sample_rate, pass_Hz, A, width)
+taps, num_taps = getTaps(sample_rate, stop_Hz, A, width)
 
 # use FIRfilter to filter x with the FIR filter
 filter = FIRfilter.FIRfilter(taps)
@@ -86,7 +86,7 @@ fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
 
 # Use the filtered ECG signal as the noise reference for adaptive filtering
 for i in range(num_samples):
-    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], mu=0.001)   
+    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], filtered_ecg_signal[i], mu=0.001)   
 
 
 # Plotting Data
