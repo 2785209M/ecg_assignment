@@ -25,11 +25,13 @@ class FIRfilter:
     def dofilteradaptive(self, signal, desired, mu):
             """
             Adaptive filtering using the LMS algorithm.
-            :param signal: The input signal !to be filtered out!
-            :param noise: The noise signal to be used for adaptation AKA ecg!
+            :param signal: The input signal, to be filtered out!
+            :param desired: The desired signal to be used for adaptation AKA ecg!
             :param mu: The step size for adaptation.
             :return: The filtered signal.
             """
+
+            # Forward pass
             result = self.dofilter(signal)
 
             # Update coefficients using LMS algorithm
@@ -37,5 +39,6 @@ class FIRfilter:
             for i in range(self.num_taps):
                 if i < len(self.delay_line):
                     self.coefficients[i] += mu * error * self.delay_line[i]
-    
+
+            # Return the error signal (the difference between the desired signal and the filtered output)
             return error
