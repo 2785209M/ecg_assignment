@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
-import FIRfilter
+import ecg_assignment.fir_filter as fir_filter
 
 IMAGES = Path("images")
 IMAGES.mkdir(parents = True, exist_ok = True)
@@ -70,7 +70,7 @@ A = 30 # stopband attenuation
 taps, num_taps = getTaps(sample_rate, stop_Hz, A, width)
 
 # use FIRfilter to filter x with the FIR filter
-filter = FIRfilter.FIRfilter(taps)
+filter = fir_filter.FIRfilter(taps)
 
 # Simulate realtime filtering of the ECG
 filtered_ecg_signal = np.zeros(num_samples)
@@ -78,7 +78,7 @@ for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
 #Simulate realtime adaptive filtering of the ECG
-adaptivefilter = FIRfilter.FIRfilter(np.zeros(num_taps)) # Initialize adaptive filter with zero coefficients
+adaptivefilter = fir_filter.FIRfilter(np.zeros(num_taps)) # Initialize adaptive filter with zero coefficients
 
 adaptive_filtered_ecg_signal = np.zeros(num_samples)
 #Use 50Hz as the signal for adaptive filtering (to be filtered out)
