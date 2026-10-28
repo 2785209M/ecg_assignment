@@ -47,15 +47,32 @@ matched_filter = fir_filter.FIRfilter(filtered_ecg_template)
 matched_filtered_ecg_signal = np.zeros(num_samples)
 
 #Realtime matched filtering of the filtered ECG signal with the filtered ECG template
+last_peak_index = 0
+current_peak_index = 0
+heartrate = []
+
 for i in range(num_samples):
     matched_filtered_ecg_signal[i] = matched_filter.dofilter(filtered_ecg_signal[i])
 
-# Square the matched filtered signal to enhance the peaks for easier detection of R-peaks
-matched_filtered_ecg_signal = matched_filtered_ecg_signal * matched_filtered_ecg_signal
+    # Square the matched filtered signal to enhance the peaks for easier detection of R-peaks
+    matched_filtered_ecg_signal[i] = matched_filtered_ecg_signal[i] * matched_filtered_ecg_signal[i]
 
+    if matched_filtered_ecg_signal[i] > 3*10**-11:
+        print("R-peak detected at sample index:", i)
+        last_peak_index = current_peak_index
+        current_peak_index = i
+        if current_peak_index - last_peak_index > 50: # Ensure that the detected peaks are at least 50 samples apart to avoid detecting the same peak multiple times
+            heartrate.append(60 * sample_rate / (current_peak_index - last_peak_index))
+
+           
 plt.figure()
 plt.title("ecg_matched_filtered_time_domain")
 plt.plot(matched_filtered_ecg_signal)
 plt.savefig("ecg_matched_filtered_time_domain.svg")
+
+plt.figure()
+plt.title("heart_rate_time_domain")
+plt.plot(heartrate)
+plt.savefig("heart_rate_time_domain.svg")
 
 
