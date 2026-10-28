@@ -87,7 +87,7 @@ fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
 # Use the filtered ECG signal as the noise reference for adaptive filtering
 for i in range(num_samples):
     adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], mu=0.001)   
- """
+
 # Plotting Data
 
 nyq_samples = num_samples // 2 # Number of Samples below Nyquist frequency
@@ -117,7 +117,7 @@ A = 30 # stopband attenuation
 taps, num_taps = getTaps(sample_rate, stop_Hz, A, width)
 
 #create a new filter for the template signal to avoid state contamination from the previous filter delay line
-filter2 = fir_filter.FIRfilter(taps)
+filter2 = ff.FIRfilter(taps)
 
 # Simulate realtime filtering of the ECG template
 filtered_ecg_template = np.zeros(len(ecg_template))
