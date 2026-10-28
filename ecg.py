@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from pathlib import Path
-import ecg_assignment.fir_filter as fir_filter
+import fir_filter as fir_filter
 
 IMAGES = Path("images")
 IMAGES.mkdir(parents = True, exist_ok = True)
@@ -78,7 +78,7 @@ for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
 #Simulate realtime adaptive filtering of the ECG
-adaptivefilter = fir_filter.FIRfilter(np.zeros(num_taps)) # Initialize adaptive filter with zero coefficients
+""" adaptivefilter = fir_filter.FIRfilter(np.zeros(num_taps)) # Initialize adaptive filter with zero coefficients
 
 adaptive_filtered_ecg_signal = np.zeros(num_samples)
 #Use 50Hz as the signal for adaptive filtering (to be filtered out)
@@ -87,7 +87,7 @@ fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
 # Use the filtered ECG signal as the noise reference for adaptive filtering
 for i in range(num_samples):
     adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], mu=0.001)   
-
+ """
 # Plotting Data
 
 nyq_samples = num_samples // 2 # Number of Samples below Nyquist frequency
@@ -104,6 +104,30 @@ t = np.linspace(0 , measurement_time , num_samples)
 # Generate the discrete frequency bins for the fourier transform
 frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 
+tsv2 = np.loadtxt("Ewan_ecg_1.tsv", delimiter='\t')
+ecg_template = tsv2[:,8].copy()
+
+num_samples = len(ecg_template) # Number of Samples in ECG signal
+sample_rate = 250 # Sampling rate of ECG signal (Hz)
+width = 1 # desired width of the transition window
+stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
+A = 30 # stopband attenuation
+
+# get the array of taps and number of taps (taps == coefficients)
+taps, num_taps = getTaps(sample_rate, stop_Hz, A, width)
+
+#create a new filter for the template signal to avoid state contamination from the previous filter delay line
+filter2 = fir_filter.FIRfilter(taps)
+
+# Simulate realtime filtering of the ECG template
+filtered_ecg_template = np.zeros(len(ecg_template))
+for i in range(len(ecg_template)):
+    filtered_ecg_template[i] = filter2.dofilter(ecg_template[i])
+
+filtered_ecg_template = filtered_ecg_template[500:700] #extract one PQRST complex from the filtered ECG template for matching
+filtered_ecg_template = filtered_ecg_template[::-1] # Reverse the filtered ECG template for cross-correlation
+t2 = np.linspace(0 , measurement_time , len(filtered_ecg_template))
+
 # Plot the FIR Impulse Response
 plt.figure()
 plt.plot(taps)
@@ -117,15 +141,27 @@ plt.title("ecg_raw_time_domain")
 plt.plot(t,ecg_signal)
 plt.savefig(IMAGES / "ecg_raw_time_domain.svg")
 
+""" # Plot the time domain signals
+plt.figure()
+plt.title("ecg_template_raw_time_domain")
+plt.plot(t2, ecg_template)
+plt.savefig(IMAGES / "ecg_template_raw_time_domain.svg") """
+
+#for some reason i get a massive impulse at the start of the filtered template signal, so I will use 500 to 700 as the template in heartbeat.py
+plt.figure()
+plt.title("ecg_template_filtered_time_domain")
+plt.plot(t2, filtered_ecg_template)
+plt.savefig(IMAGES / "ecg_template_filtered_time_domain.svg")
+
 plt.figure()
 plt.title("ecg_filtered_time_domain")
 plt.plot(t, filtered_ecg_signal)
 plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
 
-plt.figure()
+""" plt.figure()
 plt.title("ecg_adaptive_filtered_time_domain")
 plt.plot(t, adaptive_filtered_ecg_signal)
-plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
+plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg") """
 
 # Plot the frequency domain signals
 plt.figure()
