@@ -64,7 +64,6 @@ for i in range(num_samples):
         cooldown -= 1
 
     elif matched_filtered_ecg_signal[i] > threshold:
-        print("R-peak detected at sample index:", i)
         last_peak_index = current_peak_index        
         current_peak_index = i
 
