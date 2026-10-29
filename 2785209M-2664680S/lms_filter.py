@@ -15,7 +15,8 @@ ecg_signal = tsv[:,8].copy()
 num_samples = len(ecg_signal) # Number of Samples in ECG signal
 sample_rate = 250 # Sampling rate of ECG signal (Hz)
 width = 1 # desired width of the transition window
-stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
+nyquist_freq = sample_rate // 2
+stop_Hz = [(0, 3), (45, nyquist_freq)] # The cutoff frequency for the filter
 A = 30 # stopband attenuation
 
 # get the number of taps (taps == coefficients). 
@@ -43,3 +44,4 @@ plt.figure()
 plt.title("ecg_adaptive_filtered_time_domain")
 plt.plot(t, adaptive_filtered_ecg_signal)
 plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
+plt.show()

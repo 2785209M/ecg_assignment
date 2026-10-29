@@ -109,6 +109,8 @@ frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
 tsv2 = np.loadtxt("Ewan_ecg_1.tsv", delimiter='\t')
 ecg_template = tsv2[:,8].copy()
 
+group_delay = (num_taps - 1) // 2
+delay_time = group_delay / sample_rate
 num_samples = len(ecg_template) # Number of Samples in ECG signal
 sample_rate = 250 # Sampling rate of ECG signal (Hz)
 width = 1 # desired width of the transition window
@@ -141,14 +143,9 @@ plt.savefig(IMAGES / "filter_coefficients.svg")
 # Plot the time domain signals
 plt.figure()
 plt.title("ECG Raw vs. Filtered signal")
-
-# Plot both signals on the same figure
 plt.plot(t, ecg_signal, label="Raw ECG")
-plt.plot(t, filtered_ecg_signal, label="Filtered signal")
-
-# Add a legend to distinguish the lines
+plt.plot(t - delay_time, filtered_ecg_signal, label="Filtered signal")
 plt.legend()
-
 plt.savefig(IMAGES / "ecg_overlay_time_domain.svg")
 
 # Plot the time domain signals
@@ -160,12 +157,12 @@ plt.savefig(IMAGES / "ecg_template_raw_time_domain.svg")
 plt.figure()
 plt.title("ecg_filtered_time_domain")
 plt.plot(t3, filtered_ecg_template)
-plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
+plt.savefig(IMAGES / "ecg_filtered_template_time_domain.svg")
 
-""" plt.figure()
+plt.figure()
 plt.title("ecg_adaptive_filtered_time_domain")
 plt.plot(t, adaptive_filtered_ecg_signal)
-plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg") """
+plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
 
 # Plot the frequency domain signals
 plt.figure()
