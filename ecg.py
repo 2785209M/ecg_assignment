@@ -88,6 +88,8 @@ fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
 for i in range(num_samples):
     adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], learningRate=0.001)   
 
+
+
 # Plotting Data
 
 nyq_samples = num_samples // 2 # Number of Samples below Nyquist frequency
@@ -126,7 +128,8 @@ for i in range(len(ecg_template)):
 
 filtered_ecg_template = filtered_ecg_template[num_taps:] #extract one PQRST complex from the filtered ECG template for matching
 filtered_ecg_template = filtered_ecg_template[::-1] # Reverse the filtered ECG template for cross-correlation
-t2 = np.linspace(0 , measurement_time , len(filtered_ecg_template))
+t2 = np.linspace(0 , measurement_time , len(ecg_template))
+t3 = np.linspace(0 , measurement_time , len(filtered_ecg_template))
 
 # Plot the FIR Impulse Response
 plt.figure()
@@ -137,25 +140,26 @@ plt.savefig(IMAGES / "filter_coefficients.svg")
 
 # Plot the time domain signals
 plt.figure()
-plt.title("ecg_raw_time_domain")
-plt.plot(t,ecg_signal)
-plt.savefig(IMAGES / "ecg_raw_time_domain.svg")
+plt.title("ECG Raw vs. Filtered signal")
 
-""" # Plot the time domain signals
+# Plot both signals on the same figure
+plt.plot(t, ecg_signal, label="Raw ECG")
+plt.plot(t, filtered_ecg_signal, label="Filtered signal")
+
+# Add a legend to distinguish the lines
+plt.legend()
+
+plt.savefig(IMAGES / "ecg_overlay_time_domain.svg")
+
+# Plot the time domain signals
 plt.figure()
 plt.title("ecg_template_raw_time_domain")
 plt.plot(t2, ecg_template)
-plt.savefig(IMAGES / "ecg_template_raw_time_domain.svg") """
-
-#for some reason i get a massive impulse at the start of the filtered template signal, so I will use 500 to 700 as the template in heartbeat.py
-plt.figure()
-plt.title("ecg_template_filtered_time_domain")
-plt.plot(t2, filtered_ecg_template)
-plt.savefig(IMAGES / "ecg_template_filtered_time_domain.svg")
+plt.savefig(IMAGES / "ecg_template_raw_time_domain.svg")
 
 plt.figure()
 plt.title("ecg_filtered_time_domain")
-plt.plot(t, filtered_ecg_signal)
+plt.plot(t3, filtered_ecg_template)
 plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
 
 """ plt.figure()
