@@ -59,7 +59,7 @@ for i in range(num_samples):
 
     if matched_filtered_ecg_signal[i] > 3*10**-11:
         print("R-peak detected at sample index:", i)
-        if i - current_peak_index > 50:
+        if i - current_peak_index > 68:
             last_peak_index = current_peak_index
             current_peak_index = i
             heartrate.append(60 * sample_rate / (current_peak_index - last_peak_index))
