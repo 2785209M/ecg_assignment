@@ -86,7 +86,7 @@ fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
 
 # Use the filtered ECG signal as the noise reference for adaptive filtering
 for i in range(num_samples):
-    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], mu=0.001)   
+    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], learningRate=0.001)   
 
 # Plotting Data
 
