@@ -141,11 +141,11 @@ plt.title("ecg_raw_time_domain")
 plt.plot(t,ecg_signal)
 plt.savefig(IMAGES / "ecg_raw_time_domain.svg")
 
-""" # Plot the time domain signals
+'''# Plot the time domain signals
 plt.figure()
 plt.title("ecg_template_raw_time_domain")
 plt.plot(t2, ecg_template)
-plt.savefig(IMAGES / "ecg_template_raw_time_domain.svg") """
+plt.savefig(IMAGES / "ecg_template_raw_time_domain.svg")'''
 
 #for some reason i get a massive impulse at the start of the filtered template signal, so I will use 500 to 700 as the template in heartbeat.py
 plt.figure()
