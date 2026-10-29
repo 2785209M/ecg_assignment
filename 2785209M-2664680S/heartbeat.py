@@ -50,21 +50,30 @@ matched_filtered_ecg_signal = np.zeros(num_samples)
 last_peak_index = 0
 current_peak_index = 0
 heartrate = []
+cooldown_period = 50  # 50/250Hz - 0.2 seconds
+threshold = 3*10**-11
 
+cooldown = 0
 for i in range(num_samples):
     matched_filtered_ecg_signal[i] = matched_filter.dofilter(filtered_ecg_signal[i])
 
     # Square the matched filtered signal to enhance the peaks for easier detection of R-peaks
     matched_filtered_ecg_signal[i] = matched_filtered_ecg_signal[i] * matched_filtered_ecg_signal[i]
 
-    if matched_filtered_ecg_signal[i] > 3*10**-11:
+    if cooldown > 0:
+        cooldown -= 1
+
+    elif matched_filtered_ecg_signal[i] > threshold:
         print("R-peak detected at sample index:", i)
-        if i - current_peak_index > 50:
-            last_peak_index = current_peak_index
-            current_peak_index = i
+        last_peak_index = current_peak_index        
+        current_peak_index = i
+
+        if last_peak_index > 0: # Ensure there are at least two beats before calculating heartrate
             heartrate.append(60 * sample_rate / (current_peak_index - last_peak_index))
 
-           
+        cooldown = cooldown_period
+
+
 plt.figure()
 plt.title("ecg_matched_filtered_time_domain")
 plt.plot(matched_filtered_ecg_signal)
@@ -75,4 +84,4 @@ plt.title("heart_rate_time_domain")
 plt.plot(heartrate)
 plt.savefig("heart_rate_time_domain.svg")
 
-
+plt.show()
