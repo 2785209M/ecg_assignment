@@ -50,7 +50,7 @@ matched_filtered_ecg_signal = np.zeros(num_samples)
 last_peak_index = 0
 current_peak_index = 0
 heartrate = []
-cooldown_period = 50  # 50/250Hz - 0.2 seconds
+cooldown_period = 68  # 68/250Hz - limits heartrate to 220bpm
 threshold = 3*10**-11
 
 cooldown = 0
