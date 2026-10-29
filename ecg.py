@@ -124,7 +124,7 @@ filtered_ecg_template = np.zeros(len(ecg_template))
 for i in range(len(ecg_template)):
     filtered_ecg_template[i] = filter2.dofilter(ecg_template[i])
 
-filtered_ecg_template = filtered_ecg_template[500:700] #extract one PQRST complex from the filtered ECG template for matching
+filtered_ecg_template = filtered_ecg_template[num_taps:] #extract one PQRST complex from the filtered ECG template for matching
 filtered_ecg_template = filtered_ecg_template[::-1] # Reverse the filtered ECG template for cross-correlation
 t2 = np.linspace(0 , measurement_time , len(filtered_ecg_template))
 
