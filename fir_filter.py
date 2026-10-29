@@ -24,7 +24,7 @@ class FIRfilter:
 
         return result
 
-    def dofilteradaptive(self, signal, desired, mu):
+    def dofilteradaptive(self, signal, noise, learningRate):
             """
             Adaptive filtering using the LMS algorithm.
             - signal: The input signal, to be filtered out
@@ -34,13 +34,13 @@ class FIRfilter:
             """
 
             # Forward pass
-            noise = self.dofilter(signal)
+            filtered_signal = self.dofilter(signal)
 
             # calculate the error (the clean signal)
-            error = desired - noise
+            error = noise - filtered_signal
             for i in range(len(self.delay_line)):
                 # Update coefficients using LMS algorithm
-                self.coefficients[i] += mu * error * self.delay_line[i]
+                self.coefficients[i] += learningRate * error * self.delay_line[i]
 
             # Return the error signal (the difference between the desired signal and the filtered output)
             return error
