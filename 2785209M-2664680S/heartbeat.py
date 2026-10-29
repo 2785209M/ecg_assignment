@@ -2,6 +2,10 @@ import fir_design as fd
 import fir_filter as ff
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
 
 tsv1 = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
 ecg_signal = tsv1[:,8].copy()
@@ -46,6 +50,10 @@ matched_filter = ff.FIRfilter(filtered_ecg_template)
 
 matched_filtered_ecg_signal = np.zeros(num_samples)
 
+num_samples_template = len(matched_filtered_ecg_signal) # Number of Samples in ECG signal
+measurement_time = num_samples_template / sample_rate
+t2 = np.linspace(0 , measurement_time , num_samples_template)
+
 #Realtime matched filtering of the filtered ECG signal with the filtered ECG template
 last_peak_index = 0
 current_peak_index = 0
@@ -75,12 +83,12 @@ for i in range(num_samples):
 
 plt.figure()
 plt.title("ecg_matched_filtered_time_domain")
-plt.plot(matched_filtered_ecg_signal)
-plt.savefig("ecg_matched_filtered_time_domain.svg")
+plt.plot(t2, matched_filtered_ecg_signal)
+plt.savefig(IMAGES / "ecg_matched_filtered_time_domain.svg")
 
 plt.figure()
-plt.title("heart_rate_time_domain")
+plt.title(IMAGES / "heart_rate_time_domain")
 plt.plot(heartrate)
-plt.savefig("heart_rate_time_domain.svg")
+plt.savefig(IMAGES / "heart_rate_time_domain.svg")
 
 plt.show()

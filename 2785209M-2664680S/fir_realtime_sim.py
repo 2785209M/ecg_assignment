@@ -1,9 +1,13 @@
 import fir_design as fir_design
 import fir_filter as fir_filter
 import numpy as np
+from pathlib import Path
 
 tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
 ecg_signal = tsv[:,8].copy()
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
 
 # Performing FIR Filtering
 
@@ -23,3 +27,4 @@ filter = fir_filter.FIRfilter(taps)
 filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
+
