@@ -1,6 +1,11 @@
 import fir_design as fir_design
 import fir_filter as fir_filter
 import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
 
 tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
 ecg_signal = tsv[:,8].copy()
@@ -29,4 +34,12 @@ fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
 
 # Use the filtered ECG signal as the noise reference for adaptive filtering
 for i in range(num_samples):
-    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], mu=0.001)   
+    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], learningRate=0.001) 
+
+measurement_time = num_samples / sample_rate
+t = np.linspace(0 , measurement_time , num_samples)  
+
+plt.figure()
+plt.title("ecg_adaptive_filtered_time_domain")
+plt.plot(t, adaptive_filtered_ecg_signal)
+plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")

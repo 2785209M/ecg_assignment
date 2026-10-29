@@ -1,6 +1,7 @@
 import fir_design as fir_design
 import fir_filter as fir_filter
 import numpy as np
+import matplotlib.pyplot as plt
 from pathlib import Path
 
 tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
@@ -28,3 +29,10 @@ filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
+measurement_time = num_samples / sample_rate
+t = np.linspace(0 , measurement_time , num_samples)
+
+plt.figure()
+plt.title("ecg_filtered_time_domain")
+plt.plot(t, filtered_ecg_signal)
+plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
