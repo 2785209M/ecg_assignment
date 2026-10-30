@@ -1,11 +1,12 @@
 # Fdb version 4
-["pdflatex"] 1793381430.21515 "/home/james/DSP/ecg_assignment/Report/report.tex" "report.pdf" "report" 1793381430.35772 0
+["pdflatex"] 1793381771.37199 "/home/james/DSP/ecg_assignment/Report/report.tex" "report.pdf" "report" 1793381771.52272 0
   "/etc/texmf/web2c/texmf.cnf" 1790687445.17386 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/james/DSP/ecg_assignment/Report/report.tex" 1793381429.88252 5234 20690ac59129c28cbc2255f9ebdc3f4d ""
+  "/home/james/DSP/ecg_assignment/Report/report.tex" 1793381771.19556 5525 218fb776bcc45857fa74139489d251b4 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm" 1136768653 1332 1fde11373e221473104d6cc5993f046e ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm" 1136768653 1512 f21f83efb36853c0b70002322c1ab3ad ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi8.tfm" 1136768653 1520 eccf95517727cb11801f4f1aee3a21b4 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr10.tfm" 1136768653 1296 45809c5a464d5f32c8f98ba97c1bb47f ""
@@ -15,6 +16,7 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1136768653 1116 933a60c408fc0a863a92debe84b2d294 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1136768653 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1248133631 34811 78b52f49e893bcba91bd7581cdc144c0 ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb" 1248133631 32166 b0c356b15f19587482a9217ce1d8fa67 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb" 1248133631 37912 77d683123f92148345f3fc36a38d9ab1 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb" 1248133631 37166 8ab3487cbe3ab49ebce74c29ea2418db ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1248133631 35469 70d41d2b9ea31d5d813066df7c99281c ""
@@ -59,8 +61,9 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1792354803 2236302 367db42b8977bbe0db424bb6945f8cd8 ""
   "ECG_Raw.jpg" 1793356044.90577 34437 9099f13d79c8c30241f024e46700cda9 ""
   "ecg_raw_frequency_domain2.jpg" 1793357988.536 44971 a6f4d4a16ff51b7ae19e019decc1f739 ""
-  "report.aux" 1793381430.32666 1055 6bf0a5c4b8acaa787805b86146e71531 "pdflatex"
-  "report.tex" 1793381429.88252 5234 20690ac59129c28cbc2255f9ebdc3f4d ""
+  "image.png" 1793381596.92006 100288 70f13a2f840140da3012f84770da0aee ""
+  "report.aux" 1793381771.49115 1364 8c786678587933b4ea96812e8f6bc5cb "pdflatex"
+  "report.tex" 1793381771.19556 5525 218fb776bcc45857fa74139489d251b4 ""
   (generated)
   "report.aux"
   "report.log"
