@@ -142,10 +142,11 @@ plt.savefig(IMAGES / "filter_coefficients.svg")
 
 # Plot the time domain signals
 plt.figure()
-plt.title("ECG Raw vs. Filtered signal")
+plt.title("ECG_Raw")
 plt.plot(t, ecg_signal, label="Raw ECG")
+plt.figure()
+plt.title("Filtered signal")
 plt.plot(t - delay_time, filtered_ecg_signal, label="Filtered signal")
-plt.legend()
 plt.savefig(IMAGES / "ecg_overlay_time_domain.svg")
 
 # Plot the time domain signals

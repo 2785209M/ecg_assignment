@@ -1,21 +1,30 @@
-\documentclass{article}
+\documentclass[8pt]{extreport}
+\usepackage[margin=0.1in, left=0.1in, right=0.1in]{geometry}
+\usepackage{graphicx}
 
 \title{Digital Signal Processing \\ ECG Filtering Assignment}
 \author{2785209M \& 2664680S}
 \date{}
 
 \begin{document}
-\maketitle
+\twocolumn[\maketitle]
 
 \section{Plotting the ECG Signal}
-\subsection{Reading the File}
-\subsection{Plotting the Signal}
+The experiment began by taking an ECG recording and plotting it in python using matplotlib. The electrodes were attached just above the hip and on the front of the shoulder.
+
 \subsection{Structure of PQRST Complex}
+\includegraphics[width=\columnwidth]{ECG_Raw.jpg}
+It is important that we preserve the frequencies used to construct the PQRST complex, otherwise we would be destroying important data from the ECG. 
+
 \subsection{Sources of Noise in the ECG}
+\includegraphics[width=\columnwidth]{ecg_raw_frequency_domain.jpg}
+The main sources of noise in an ECG are 50Hz mains interference and random noise caused by movement and breathing.
+There is also a DC offset which shifts the entire signal by a certain amount, caused by potential difference formed between the electrodes and the skin.
 
 \section{Making the FIR Filter}
 \subsection{calculating the number of coefficients and Stopband Attenuation}
 \subsection{Performing IFFT on the ideal frequency response in the time domain}
 \subsection{The Kaiser Window}
+
 
 \end{document}
