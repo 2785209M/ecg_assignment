@@ -1,6 +1,7 @@
-\documentclass[8pt]{extreport}
-\usepackage[margin=0.1in, left=0.1in, right=0.1in]{geometry}
+\documentclass[8pt]{extarticle}
+\usepackage[margin=0.2in]{geometry}
 \usepackage{graphicx}
+\usepackage{amsmath}
 
 \title{Digital Signal Processing \\ ECG Filtering Assignment}
 \author{2785209M \& 2664680S}
@@ -17,14 +18,55 @@ The experiment began by taking an ECG recording and plotting it in python using 
 It is important that we preserve the frequencies used to construct the PQRST complex, otherwise we would be destroying important data from the ECG. 
 
 \subsection{Sources of Noise in the ECG}
-\includegraphics[width=\columnwidth]{ecg_raw_frequency_domain.jpg}
-The main sources of noise in an ECG are 50Hz mains interference and random noise caused by movement and breathing.
-There is also a DC offset which shifts the entire signal by a certain amount, caused by potential difference formed between the electrodes and the skin.
+% TODO update this plot with the specific locations of the individual PQRST frequencies
+\includegraphics[width=\columnwidth]{ecg_raw_frequency_domain2.jpg}
+The main sources of noise in an ECG are 50Hz mains interference, Breathing, and random noise caused by movement.
+There is also a DC offset which shifts the entire signal by a certain amount, caused by potential difference formed between the electrodes and the skin.\\
+The human heart rate can go as low as 0.5Hz at complete rest. Considering this, the filter should remove frequencies below 0.5Hz (This includes DC shift and Breathing) and above 45Hz (Mains noise and other high frequency interference).
+Although this leaves in random noise cause by movement, the core frequencies of the PQRST complex must be retained for the signal to remain accurate.
 
 \section{Making the FIR Filter}
-\subsection{calculating the number of coefficients and Stopband Attenuation}
-\subsection{Performing IFFT on the ideal frequency response in the time domain}
+
+\subsection{Stop-Band Filter}
+A stop-band filter was implemented in this code by utilizing an all-pass filter, a band-pass filter, and the principle of superposition.
+First, the number of coefficients needed for the windowing function to work had to be calculated. For a Kaiser Window, this changes based on the desired stopband attenuation and transition width. The formula is displayed in the next subsection in Equation (3).
+Then, using the number of taps, an ideal all-pass filter was defined by creating an array of zeros, with an index stretching from indices of -m to m (where m = num\_taps / 2), with the central value at index m set to 1. This represents the ideal impulse response.
+Finally the array $n$ is initialized, which represents discrete time indices from -m to m. Evalutating functions over this symmetric time vector is what gives the filter linear phase and constant group delay.
+\\When a signal is convolved with a unit impulse, it is left unchanged; this is what makes it all-pass.
+This all-pass filter is then modified in a for loop iterating over the array of stop bands.
+The stop bands live in the frequency domain, so an inverse discrete time fourier transform is applied to convert them into the time-domain before they are subtracted from the impulse response:
+\begin{equation}
+h_{\text{band}}[n] = 2 \cdot f_2 \cdot \operatorname{sinc}(2 \cdot f_2 \cdot n) - 2 \cdot f_1 \cdot \operatorname{sinc}(2 \cdot f_1 \cdot n)
+\end{equation}
+After this for-loop is complete, h will be a raw band-stop filter (sharp edges in the frequency domain, causing ringing due to the Gibbs Phenomenon).
+To smooth out these edges, it must be multiplied with a windowing function.
+
 \subsection{The Kaiser Window}
+The Kaiser window was chosen for its flexibility and simplicity. It gives greater flexibility than other windowing functions, 
+since the user has control over both the size of the transition window and the stopband attenuation. With specific stopband attenuations, it is possible for the Kaiser window to mimic other windowing functions.
+The Kaiser filter also has straightforward formulas to calculate beta (the stopband attenuation parameter) and num\_taps (the number of coefficients needed for the filter), 
+allowing it to be practically calculated almost entirely in code without external libraries.
+The formulae used in the code are as follows:
 
+\begin{figure}[htbp]
+beta parameter:
+\begin{equation}
+\beta = 
+\begin{cases} 
+0.1102 (A - 8.7) & \text{if } A > 50 \\
+0.5842 (A - 21)^{0.4} + 0.07886 (A - 21) & \text{if } 21 \le A \le 50 \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation}
 
+number of taps:
+\begin{equation}
+N = \left\lfloor \frac{A - 8}{2.285 \cdot 2\pi \left( \frac{\Delta f}{f_s} \right)} \right\rfloor
+\end{equation}
+
+kaiser window:
+\begin{equation}
+w[n] = \frac{I_0 \left( \beta \sqrt{1 - \left( \frac{n}{m} \right)^2} \right)}{I_0(\beta)}
+\end{equation}
+\end{figure}
 \end{document}
