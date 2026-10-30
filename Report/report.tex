@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 
-\title{Digital Signal Processing \\ ECG Filtering Assignment}
+\title{Digital Signal Processing \\ ECG FIR Filtering Assignment}
 \author{2785209M \& 2664680S}
 \date{}
 
@@ -28,23 +28,28 @@ Although this leaves in random noise cause by movement, the core frequencies of 
 \section{Making the FIR Filter}
 
 \subsection{Stop-Band Filter}
-A stop-band filter was implemented in this code by utilizing an all-pass filter, a band-pass filter, and the principle of superposition.
+A stop-band filter was implemented in this code by utilizing an all-pass filter, a band-pass filter, and the principle of superposition. This was done instead of using a pure band-stop filter in order to keep the code simple and elegant, as it is easier to remove frequencies from an all-pass filter than it is to combine multiple separate lo-pass and hi-pass filters together.\\
 First, the number of coefficients needed for the windowing function to work had to be calculated. For a Kaiser Window, this changes based on the desired stopband attenuation and transition width. The formula is displayed in the next subsection in Equation (3).
 Then, using the number of taps, an ideal all-pass filter was defined by creating an array of zeros, with an index stretching from indices of -m to m (where m = num\_taps / 2), with the central value at index m set to 1. This represents the ideal impulse response.
 Finally the array $n$ is initialized, which represents discrete time indices from -m to m. Evalutating functions over this symmetric time vector is what gives the filter linear phase and constant group delay.
 \\When a signal is convolved with a unit impulse, it is left unchanged; this is what makes it all-pass.
 This all-pass filter is then modified in a for loop iterating over the array of stop bands.
 The stop bands live in the frequency domain, so an inverse discrete time fourier transform is applied to convert them into the time-domain before they are subtracted from the impulse response:
+
+\begin{figure}[htbp]
 \begin{equation}
 h_{\text{band}}[n] = 2 \cdot f_2 \cdot \operatorname{sinc}(2 \cdot f_2 \cdot n) - 2 \cdot f_1 \cdot \operatorname{sinc}(2 \cdot f_1 \cdot n)
 \end{equation}
+{\tiny (Note: Doing the IDFT manually is less efficient than using np.IFFT() and was done purely for analytical purposes)}
+\end{figure}
+
 After this for-loop is complete, h will be a raw band-stop filter (sharp edges in the frequency domain, causing ringing due to the Gibbs Phenomenon).
 To smooth out these edges, it must be multiplied with a windowing function.
 
 \subsection{The Kaiser Window}
 The Kaiser window was chosen for its flexibility and simplicity. It gives greater flexibility than other windowing functions, 
-since the user has control over both the size of the transition window and the stopband attenuation. With specific stopband attenuations, it is possible for the Kaiser window to mimic other windowing functions.
-The Kaiser filter also has straightforward formulas to calculate beta (the stopband attenuation parameter) and num\_taps (the number of coefficients needed for the filter), 
+since the user has control over both the size of the transition window and the stopband attenuation. With specific stopband attenuations, it is also possible for the Kaiser window to mimic other windowing functions.
+Furthermore, the Kaiser filter has straightforward formulas to calculate beta (the stopband attenuation parameter) and num\_taps (the number of coefficients needed for the filter), 
 allowing it to be practically calculated almost entirely in code without external libraries.
 The formulae used in the code are as follows:
 
@@ -69,4 +74,13 @@ kaiser window:
 w[n] = \frac{I_0 \left( \beta \sqrt{1 - \left( \frac{n}{m} \right)^2} \right)}{I_0(\beta)}
 \end{equation}
 \end{figure}
+
+The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients. This will then be passed into the fir\_filter class to simulate realtime filtering.
+
+\section{Simulation of Real-time Filtering}
+
+\section{Adaptive LMS Filter}
+
+\section{Heartbeat Detection}
+
 \end{document}
