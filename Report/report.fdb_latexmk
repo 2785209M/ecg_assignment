@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1793381360.52296 "/home/james/DSP/ecg_assignment/Report/report.tex" "report.pdf" "report" 1793381360.66161 0
+["pdflatex"] 1793381430.21515 "/home/james/DSP/ecg_assignment/Report/report.tex" "report.pdf" "report" 1793381430.35772 0
   "/etc/texmf/web2c/texmf.cnf" 1790687445.17386 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/james/DSP/ecg_assignment/Report/report.tex" 1793381360.19424 5224 d532e816193d57554193e18a8de3a5a7 ""
+  "/home/james/DSP/ecg_assignment/Report/report.tex" 1793381429.88252 5234 20690ac59129c28cbc2255f9ebdc3f4d ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -59,8 +59,8 @@
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1792354803 2236302 367db42b8977bbe0db424bb6945f8cd8 ""
   "ECG_Raw.jpg" 1793356044.90577 34437 9099f13d79c8c30241f024e46700cda9 ""
   "ecg_raw_frequency_domain2.jpg" 1793357988.536 44971 a6f4d4a16ff51b7ae19e019decc1f739 ""
-  "report.aux" 1793381360.63242 1045 210c948cff38787b6e4231946be8b77b "pdflatex"
-  "report.tex" 1793381360.19424 5224 d532e816193d57554193e18a8de3a5a7 ""
+  "report.aux" 1793381430.32666 1055 6bf0a5c4b8acaa787805b86146e71531 "pdflatex"
+  "report.tex" 1793381429.88252 5234 20690ac59129c28cbc2255f9ebdc3f4d ""
   (generated)
   "report.aux"
   "report.log"

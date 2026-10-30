@@ -25,7 +25,7 @@ There is also a DC offset which shifts the entire signal by a certain amount, ca
 The human heart rate can go as low as 0.5Hz at complete rest. Considering this, the filter should remove frequencies below 0.5Hz (This includes DC shift and Breathing) and above 45Hz (Mains noise and other high frequency interference).
 Although this leaves in random noise cause by movement, the core frequencies of the PQRST complex must be retained for the signal to remain accurate.
 
-\section{Making the FIR Filter}
+\section{Generating the FIR Coefficients}
 
 \subsection{Stop-Band Filter}
 A stop-band filter was implemented in this code by utilizing an all-pass filter, a band-pass filter, and the principle of superposition. This was done instead of using a pure band-stop filter in order to keep the code simple and elegant, as it is easier to remove frequencies from an all-pass filter than it is to combine multiple separate lo-pass and hi-pass filters together.\\
