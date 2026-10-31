@@ -2,6 +2,7 @@
 \usepackage[margin=0.2in]{geometry}
 \usepackage{graphicx}
 \usepackage{amsmath}
+\usepackage{svg}
 
 \title{Digital Signal Processing \\ ECG FIR Filtering Assignment}
 \author{2785209M \& 2664680S}
@@ -16,16 +17,16 @@
 The experiment began by taking an ECG recording and plotting it in python using matplotlib. The electrodes were attached just above the hip and on the front of the shoulder.
 
 \subsection{Structure of PQRST Complex}
-\includegraphics[width=\columnwidth]{ECG_Raw.jpg}
+\includesvg[width=\columnwidth]{ECG_Raw_James.svg}
 It is important that we preserve the frequencies used to construct the PQRST complex, otherwise we would be destroying important data from the ECG. 
 
 \subsection{Sources of Noise in the ECG}
 % TODO update this plot with the specific locations of the individual PQRST frequencies
-\includegraphics[width=\columnwidth]{ecg_raw_frequency_domain2.jpg}
+\includesvg[width=\columnwidth]{ECG_Raw_Frequency_Domain.svg}
 The main sources of noise in an ECG are 50Hz mains interference, Breathing, and random noise caused by movement.
 There is also a DC offset which shifts the entire signal by a certain amount, caused by potential difference formed between the electrodes and the skin.\\
 The human heart rate can go as low as 0.5Hz at complete rest. Considering this, the filter should remove frequencies below 0.5Hz (This includes DC shift and Breathing) and above 45Hz (Mains noise and other high frequency interference).
-Although this leaves in random noise cause by movement, the core frequencies of the PQRST complex must be retained for the signal to remain accurate.
+Although this leaves in random noise cause by movement, the core frequencies of the PQRST complex must be retained for the signal to remain accurate for monitoring purposes.
 
 \section{Generating the FIR Coefficients}
 
@@ -50,7 +51,8 @@ To smooth out these edges, it must be multiplied with a windowing function.
 
 \subsection{The Kaiser Window}
 The Kaiser window was chosen for its flexibility and simplicity. It gives greater flexibility than other windowing functions, 
-since the user has control over both the size of the transition window and the stopband attenuation. With specific stopband attenuations, it is also possible for the Kaiser window to mimic other windowing functions.
+since the user has control over both the size of the transition window and the stopband attenuation. This allows you to find a precise balance between a narrow central peak (sharper cutoff) and flatter sidelobes (better noise rejection) in the impulse response.
+With specific stopband attenuations, it is also possible for the Kaiser window to mimic other windowing functions.
 Furthermore, the Kaiser filter has straightforward formulas to calculate beta (the stopband attenuation parameter) and num\_taps (the number of coefficients needed for the filter), 
 allowing it to be practically calculated almost entirely in code without external libraries.
 The formulae used in the code are as follows:
@@ -77,12 +79,16 @@ w[n] = \frac{I_0 \left( \beta \sqrt{1 - \left( \frac{n}{m} \right)^2} \right)}{I
 \end{equation}
 \end{figure}
 
-The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients. This will then be passed into the fir\_filter class to simulate realtime filtering.
+The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients, resulting in this impulse response:
+
+\includesvg[width=\columnwidth]{filter_coefficients.svg}
+
+As you can see, this results in an impulse response with a large central peak and sidelobes that gradually decay to zero as they approach tap 0 and tap 383. This shows that the Kaiser Window has successfully truncated and reduced the sharpness of our FIR filter.
+These coefficients can now be passed into the fir\_filter class to simulate realtime filtering.
 
 
 % Ewan's Sections:
 
-\newpage
 \section{Simulation of Real-time Filtering}
 \subsection{Subsection}
 
@@ -90,7 +96,7 @@ The FIR filter is then multiplied by the Kaiser window, to create the final arra
 Math Block
 \end{equation}
 
-\includegraphics[width=\columnwidth]{image.png}
+\includesvg[width=\columnwidth]{ECG_Filtered_Frequency_Domain.svg}
 
 {\tiny tiny text}
 Normal Sized text

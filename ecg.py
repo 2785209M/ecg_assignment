@@ -67,7 +67,7 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
 num_samples = len(ecg_signal)  # Number of samples in the ECG signal
 sample_rate = 250              # Sampling rate of the ECG signal (Hz)
 width = 1                      # Width of the transition window (Hz)
-stop_Hz = [(40, sample_rate // 2)]  # Stop bands
+stop_Hz = [(0, 0.5), (40, sample_rate // 2)]  # Stop bands
 A = 30                         # Stop-band attenuation (dB)
 
 # Get the filter coefficients (taps) and the number of taps
