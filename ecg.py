@@ -1,13 +1,15 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
+
 import fir_filter as ff
 
 IMAGES = Path("images")
-IMAGES.mkdir(parents = True, exist_ok = True)
+IMAGES.mkdir(parents=True, exist_ok=True)
 
-tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
-ecg_signal = tsv[:,8].copy()
+tsv = np.loadtxt("James_ecg_1.tsv", delimiter="\t")
+ecg_signal = tsv[:, 8].copy()
 
 
 # Defining Functions
@@ -58,98 +60,131 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     return taps, num_taps
 
 
-# Performing FIR Filtering
+# ---------------------------------------------------------------------------
+# FIR filtering
+# ---------------------------------------------------------------------------
 
-num_samples = len(ecg_signal) # Number of Samples in ECG signal
-sample_rate = 250 # Sampling rate of ECG signal (Hz)
-width = 1 # desired width of the transition window
-stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
-A = 30 # stopband attenuation
+num_samples = len(ecg_signal)  # Number of samples in the ECG signal
+sample_rate = 250              # Sampling rate of the ECG signal (Hz)
+width = 1                      # Width of the transition window (Hz)
+stop_Hz = [(40, sample_rate // 2)]  # Stop bands
+A = 30                         # Stop-band attenuation (dB)
 
-# get the array of taps and number of taps (taps == coefficients)
+# Get the filter coefficients (taps) and the number of taps
 taps, num_taps = getTaps(sample_rate, stop_Hz, A, width)
 
-# use FIRfilter to filter x with the FIR filter
-filter = ff.FIRfilter(taps)
+fir = ff.FIRfilter(taps)
 
-# Simulate realtime filtering of the ECG
+# Simulate real-time filtering of the ECG
 filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
-    filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
+    filtered_ecg_signal[i] = fir.dofilter(ecg_signal[i])
 
-#Simulate realtime adaptive filtering of the ECG
-adaptivefilter = ff.FIRfilter(np.zeros(num_taps)) # Initialize adaptive filter with zero coefficients
 
-adaptive_filtered_ecg_signal = np.zeros(num_samples)
-#Use 50Hz as the signal for adaptive filtering (to be filtered out)
+# ---------------------------------------------------------------------------
+# Adaptive filtering
+# ---------------------------------------------------------------------------
+
+# Start with all-zero coefficients
+adaptivefilter = ff.FIRfilter(np.zeros(num_taps))
+
+# 50 Hz reference signal used to adaptively remove the mains interference
 fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
 
-# Use the filtered ECG signal as the noise reference for adaptive filtering
+# Simulate real-time adaptive filtering of the ECG
+adaptive_filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
-    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], learningRate=0.001)   
+    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(
+        fiftyHz[i], ecg_signal[i], learningRate=0.001)
 
 
+# ---------------------------------------------------------------------------
+# Data for plotting
+# ---------------------------------------------------------------------------
 
-# Plotting Data
-
-nyq_samples = num_samples // 2 # Number of Samples below Nyquist frequency
-nyq_rate = sample_rate / 2 # Nyquist Adjusted Sampling Rate
+nyq_samples = num_samples // 2  # Number of samples below the Nyquist frequency
+nyq_rate = sample_rate / 2      # Nyquist frequency (Hz)
 measurement_time = num_samples / sample_rate
 
-# Generate frequency Spectrum
+# Frequency spectra (positive frequencies only)
 raw_nyq_fft = np.abs(np.fft.fft(ecg_signal))[:nyq_samples]
 filtered_nyq_fft = np.abs(np.fft.fft(filtered_ecg_signal))[:nyq_samples]
 
-# Create an x axis for the time domain with the correct number of samples in the measurement time
-t = np.linspace(0 , measurement_time , num_samples)
+# Time axis covering the full measurement
+t = np.linspace(0, measurement_time, num_samples)
 
-# Generate the discrete frequency bins for the fourier transform
-frequency_bins = np.linspace(0, nyq_rate , nyq_samples , endpoint = False)
+# Discrete frequency bins for the Fourier transform
+frequency_bins = np.linspace(0, nyq_rate, nyq_samples, endpoint=False)
 
-tsv2 = np.loadtxt("Ewan_ecg_1.tsv", delimiter='\t')
-ecg_template = tsv2[:,8].copy()
-
+# Delay introduced by the linear-phase FIR filter
 group_delay = (num_taps - 1) // 2
 delay_time = group_delay / sample_rate
-num_samples = len(ecg_template) # Number of Samples in ECG signal
-sample_rate = 250 # Sampling rate of ECG signal (Hz)
-width = 1 # desired width of the transition window
-stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
-A = 30 # stopband attenuation
 
-# get the array of taps and number of taps (taps == coefficients)
-taps, num_taps = getTaps(sample_rate, stop_Hz, A, width)
 
-#create a new filter for the template signal to avoid state contamination from the previous filter delay line
+# ---------------------------------------------------------------------------
+# ECG template
+# ---------------------------------------------------------------------------
+
+tsv2 = np.loadtxt("Ewan_ecg_1.tsv", delimiter="\t")
+ecg_template = tsv2[:, 8].copy()
+
+num_samples = len(ecg_template)
+sample_rate = 250
+width = 1
+stop_Hz = [(0, 3), (40, sample_rate // 2)]  # Stop bands: below 3 Hz and above 40 Hz
+A = 30
+
+
+# Get the filter coefficients (taps) and the number of taps
+template_taps, num_template_taps = getTaps(sample_rate, stop_Hz, A, width)
+
+# Create a new filter for the template to avoid state contamination from the previous filter's delay line
 filter2 = ff.FIRfilter(taps)
 
-# Simulate realtime filtering of the ECG template
+# Simulate real-time filtering of the ECG template
 filtered_ecg_template = np.zeros(len(ecg_template))
 for i in range(len(ecg_template)):
     filtered_ecg_template[i] = filter2.dofilter(ecg_template[i])
 
-filtered_ecg_template = filtered_ecg_template[num_taps:] #extract one PQRST complex from the filtered ECG template for matching
-filtered_ecg_template = filtered_ecg_template[::-1] # Reverse the filtered ECG template for cross-correlation
-t2 = np.linspace(0 , measurement_time , len(ecg_template))
-t3 = np.linspace(0 , measurement_time , len(filtered_ecg_template))
+filtered_ecg_template = filtered_ecg_template[num_taps:]  # Extract one PQRST complex for matching
+filtered_ecg_template = filtered_ecg_template[::-1]       # Reverse for cross-correlation
+t2 = np.linspace(0, measurement_time, len(ecg_template))
+t3 = np.linspace(0, measurement_time, len(filtered_ecg_template))
 
-# Plot the FIR Impulse Response
+
+
+# ---------------------------------------------------------------------------
+# Plots
+# ---------------------------------------------------------------------------
+
+# FIR impulse response
 plt.figure()
 plt.plot(taps)
 plt.title("Impulse Response (%d taps)" % num_taps)
 plt.grid(True)
 plt.savefig(IMAGES / "filter_coefficients.svg")
 
-# Plot the time domain signals
+# FIR frequency response
+frequency_domain_filter = np.fft.fft(taps)
+
+plt.figure()
+plt.plot(frequency_domain_filter)
+plt.title("Filter (%d taps)" % num_taps)
+plt.grid(True)
+plt.savefig(IMAGES / "filter.svg")
+
+# Time-domain signals
 plt.figure()
 plt.title("ECG_Raw")
 plt.plot(t, ecg_signal, label="Raw ECG")
+
 plt.figure()
 plt.title("Filtered signal")
 plt.plot(t - delay_time, filtered_ecg_signal, label="Filtered signal")
 plt.savefig(IMAGES / "ecg_overlay_time_domain.svg")
 
-# Plot the time domain signals
+"""
+# Time-domain signals
 plt.figure()
 plt.title("ecg_template_raw_time_domain")
 plt.plot(t2, ecg_template)
@@ -165,7 +200,7 @@ plt.title("ecg_adaptive_filtered_time_domain")
 plt.plot(t, adaptive_filtered_ecg_signal)
 plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
 
-# Plot the frequency domain signals
+# Frequency-domain signals
 plt.figure()
 plt.title("ecg_raw_frequency_domain")
 plt.plot(frequency_bins, raw_nyq_fft)
@@ -177,6 +212,7 @@ plt.title("ecg_filtered_frequency_domain")
 plt.plot(frequency_bins, filtered_nyq_fft)
 plt.grid(True)
 plt.savefig(IMAGES / "ecg_filtered_frequency_domain.svg")
+"""
 
 plt.show()
 plt.close()
