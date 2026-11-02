@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{svg}
 
+
 \title{Digital Signal Processing \\ ECG FIR Filtering Assignment}
 \author{2785209M \& 2664680S}
 \date{}
@@ -79,11 +80,12 @@ w[n] = \frac{I_0 \left( \beta \sqrt{1 - \left( \frac{n}{m} \right)^2} \right)}{I
 \end{equation}
 \end{figure}
 
-The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients, resulting in this impulse response:
+The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients, producing this impulse response in the time domain:
 
 \includesvg[width=\columnwidth]{filter_coefficients.svg}
 
-As you can see, this results in an impulse response with a large central peak and sidelobes that gradually decay to zero as they approach tap 0 and tap 383. This shows that the Kaiser Window has successfully truncated and reduced the sharpness of our FIR filter.
+As you can see, this impulse response has a large, narrow central peak and sidelobes that gradually decay to zero as they approach tap 0 and tap 383.
+This shows that our windowing function has successfully removed ringing due to the Gibbs Phenomenon.
 These coefficients can now be passed into the fir\_filter class to simulate realtime filtering.
 
 

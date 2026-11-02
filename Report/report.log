@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.10.18)  31 OCT 2026 14:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.10.18)  2 NOV 2026 09:44
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -256,20 +256,20 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 ) (./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -324,7 +324,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
  (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package svg Info: Last page of `./svg-inkscape/ECG_Raw_James_svg-tex.pdf' is 3 on input line 20.
+Package svg Info: Last page of `./svg-inkscape/ECG_Raw_James_svg-tex.pdf' is 3 on input line 21.
  (./svg-inkscape/ECG_Raw_James_svg-tex.pdf_tex
 <./svg-inkscape/ECG_Raw_James_svg-tex.pdf, id=5, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/ECG_Raw_James_svg-tex.pdf Graphic file (type pdf)
@@ -342,7 +342,7 @@ File: ./svg-inkscape/ECG_Raw_James_svg-tex.pdf Graphic file (type pdf)
 Package pdftex.def Info: ./svg-inkscape/ECG_Raw_James_svg-tex.pdf , page3 used on input line 63.
 (pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
 )
-Package svg Info: Last page of `./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf' is 2 on input line 25.
+Package svg Info: Last page of `./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf' is 2 on input line 26.
  (./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf_tex
 <./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf, id=9, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf Graphic file (type pdf)
@@ -355,7 +355,7 @@ File: ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf Graphic file (type pdf
 Package pdftex.def Info: ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf , page2 used on input line 64.
 (pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
 )
-Package svg Info: Last page of `./svg-inkscape/filter_coefficients_svg-tex.pdf' is 1 on input line 84.
+Package svg Info: Last page of `./svg-inkscape/filter_coefficients_svg-tex.pdf' is 1 on input line 85.
  (./svg-inkscape/filter_coefficients_svg-tex.pdf_tex
 <./svg-inkscape/filter_coefficients_svg-tex.pdf, id=12, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/filter_coefficients_svg-tex.pdf Graphic file (type pdf)
@@ -363,7 +363,7 @@ File: ./svg-inkscape/filter_coefficients_svg-tex.pdf Graphic file (type pdf)
 Package pdftex.def Info: ./svg-inkscape/filter_coefficients_svg-tex.pdf , page1 used on input line 56.
 (pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
 )
-Overfull \hbox (12.0pt too wide) in paragraph at lines 84--85
+Overfull \hbox (12.0pt too wide) in paragraph at lines 85--86
 [][] 
  []
 
@@ -383,7 +383,7 @@ pdfTeX warning: pdflatex (file ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.p
 
 pdfTeX warning: pdflatex (file ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
-Package svg Info: Last page of `./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf' is 1 on input line 99.
+Package svg Info: Last page of `./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf' is 1 on input line 101.
  (./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex
 <./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf, id=78, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf Graphic file (type pdf)
@@ -391,7 +391,7 @@ File: ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf Graphic file (typ
 Package pdftex.def Info: ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf , page1 used on input line 56.
 (pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
 )
-Overfull \hbox (12.0pt too wide) in paragraph at lines 99--100
+Overfull \hbox (12.0pt too wide) in paragraph at lines 101--102
 [][] 
  []
 

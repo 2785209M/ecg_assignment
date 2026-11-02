@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1793456814.70213 "/home/james/DSP/ecg_assignment/Report/report.tex" "report.pdf" "report" 1793456814.96428 0
+["pdflatex"] 1793612678.28842 "/home/james/DSP/ecg_assignment/Report/report.tex" "report.pdf" "report" 1793612678.55138 0
   "/etc/texmf/web2c/texmf.cnf" 1790687445.17386 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/james/DSP/ecg_assignment/Report/report.tex" 1793456814.52401 6102 abc762cdddc107d6b49310824f29c6cc ""
+  "/home/james/DSP/ecg_assignment/Report/report.tex" 1793612678.10822 6107 65df85a31cf4aa2acc28d1fc53c218f2 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -90,8 +90,8 @@
   "ECG_Raw_Frequency_Domain.svg" 1793452817.8801 81573 1f5d3e66d8fe9c75f6093d5a787439fe ""
   "ECG_Raw_James.svg" 1793453319.99874 45033 7a1633a287da98b856db1c5549adedca ""
   "filter_coefficients.svg" 1793455587.28209 35520 bb483079d1a35cd76a10e2b4baf994b2 ""
-  "report.aux" 1793456814.92137 1453 0065b87bce39f95fe05335b1beb20385 "pdflatex"
-  "report.tex" 1793456814.52401 6102 abc762cdddc107d6b49310824f29c6cc ""
+  "report.aux" 1793612678.50909 1453 0065b87bce39f95fe05335b1beb20385 "pdflatex"
+  "report.tex" 1793612678.10822 6107 65df85a31cf4aa2acc28d1fc53c218f2 ""
   "svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf" 1793456075.19498 27685 81500589cd04761660f0d1f6fb2fd6d8 ""
   "svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex" 1793456075.1952 2130 8b0e4e324b5713f9c86adfdfa5dfd817 ""
   "svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf" 1793454896.08947 29224 81a362fa9ca567a30a9a625b26daae44 ""
