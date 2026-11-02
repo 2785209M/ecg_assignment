@@ -57,6 +57,13 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     # Window the stop-band filter with our kaiser window
     taps = h * kaiser_window
 
+    # plt.figure()
+    # plt.plot(taps)
+    # plt.title("Impulse Response Unwindowed (%d taps)" % num_taps)
+    # plt.grid(True)
+    # plt.savefig(IMAGES / "impulse_response_unwindowed.svg")
+
+
     return taps, num_taps
 
 
