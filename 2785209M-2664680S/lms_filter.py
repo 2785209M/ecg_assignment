@@ -31,7 +31,7 @@ adaptivefilter = fir_filter.FIRfilter(np.zeros(num_taps))
 adaptive_filtered_ecg_signal = np.zeros(num_samples)
 
 #Use 50Hz as the signal for adaptive filtering (to be filtered out)
-fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples))
+fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples)) + 0.25
 
 # Use the filtered ECG signal as the noise reference for adaptive filtering
 for i in range(num_samples):
@@ -42,6 +42,6 @@ t = np.linspace(0 , measurement_time , num_samples)
 
 plt.figure()
 plt.title("ecg_adaptive_filtered_time_domain")
-plt.plot(t, adaptive_filtered_ecg_signal)
+plt.plot(t[0:1000], adaptive_filtered_ecg_signal[0:1000])
 plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
 plt.show()
