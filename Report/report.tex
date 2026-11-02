@@ -20,12 +20,12 @@
 The experiment began by taking an ECG recording and plotting it in python using matplotlib. The electrodes were attached just above the hip and on the front of the shoulder.
 
 \subsection{Structure of PQRST Complex}
-\includesvg[width=\columnwidth]{ECG_Raw_James.svg}
+\includesvg[width=\columnwidth]{ECG_Raw_James}
 It is important that we preserve the frequencies used to construct the PQRST complex, otherwise we would be destroying important data from the ECG. 
 
 \subsection{Sources of Noise in the ECG}
 % TODO update this plot with the specific locations of the individual PQRST frequencies
-\includesvg[width=\columnwidth]{ECG_Raw_Frequency_Domain.svg}
+\includesvg[width=\columnwidth]{ECG_Raw_Frequency_Domain}
 The main sources of noise in an ECG are 50Hz mains interference, Breathing, and random noise caused by movement.
 There is also a DC offset which shifts the entire signal by a certain amount, caused by potential difference formed between the electrodes and the skin.\\
 The human heart rate can go as low as 0.5Hz at complete rest. Considering this, the filter should remove frequencies below 0.5Hz (This includes DC shift and Breathing) and above 45Hz (Mains noise and other high frequency interference).
@@ -51,7 +51,7 @@ h_{\text{band}}[n] = 2 \cdot f_2 \cdot \operatorname{sinc}(2 \cdot f_2 \cdot n) 
 After this for-loop is complete, h will be a raw band-stop filter (sharp edges in the frequency domain, causing ringing due to the Gibbs Phenomenon).
 The Gibbs phenonenom can be seen in the impulse response of the filter as the side lobes aren't able to settle to zero before they get truncated:
 
-\includesvg[width = \columnwidth]{impulse_response_unwindowed.svg}
+\includesvg[width = \columnwidth]{impulse_response_unwindowed}
 
 To fix this, it must be multiplied with a windowing function.
 
@@ -87,8 +87,8 @@ w[n] = \frac{I_0 \left( \beta \sqrt{1 - \left( \frac{n}{m} \right)^2} \right)}{I
 
 The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients, producing this impulse response in the time domain:
 
-\includesvg[width=\columnwidth]{Kaiser_Impulse_Response.svg}
-\includesvg[width=\columnwidth]{filter_coefficients.svg}
+\includesvg[width=\columnwidth]{Kaiser_Impulse_Response}
+\includesvg[width=\columnwidth]{filter_coefficients}
 
 As you can see, this impulse response has a large, narrow central peak and sidelobes that gradually decay to zero as they approach tap 0 and tap 383.
 This shows that our windowing function has successfully removed ringing due to the Gibbs Phenomenon.
@@ -104,7 +104,7 @@ These coefficients can now be passed into the fir\_filter class to simulate real
 Math Block
 \end{equation}
 
-\includesvg[width=\columnwidth]{ECG_Filtered_Frequency_Domain.svg}
+\includesvg[width=\columnwidth]{ECG_Filtered_Frequency_Domain}
 
 {\tiny tiny text}
 Normal Sized text
