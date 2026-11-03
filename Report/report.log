@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.11.2)  2 NOV 2026 17:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.10.18)  3 NOV 2026 12:17
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/mnt/c/Users/james/Documents/DSP/ecg_assignment/test_ecg_1/Report/report.tex
-(/mnt/c/Users/james/Documents/DSP/ecg_assignment/test_ecg_1/Report/report.tex
+**/home/james/DSP/ecg_assignment/Report/report.tex
+(/home/james/DSP/ecg_assignment/Report/report.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (/usr/share/texlive/texmf-dist/tex/latex/extsizes/extarticle.cls
@@ -342,17 +342,22 @@ File: ./svg-inkscape/ECG_Raw_James_svg-tex.pdf Graphic file (type pdf)
 Package pdftex.def Info: ./svg-inkscape/ECG_Raw_James_svg-tex.pdf , page3 used on input line 63.
 (pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
 )
-Package svg Info: Last page of `./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf' is 1 on input line 28.
+Package svg Info: Last page of `./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf' is 2 on input line 28.
  (./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf_tex
 <./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf, id=9, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf Graphic file (type pdf)
 <use ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf, page 1>
 Package pdftex.def Info: ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf , page1 used on input line 56.
 (pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
+<./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf, id=10, page=2, 462.52798pt x 346.89601pt>
+File: ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf Graphic file (type pdf)
+<use ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf, page 2>
+Package pdftex.def Info: ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf , page2 used on input line 64.
+(pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
 )
 Package svg Info: Last page of `./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf' is 1 on input line 54.
  (./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf_tex
-<./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf, id=11, page=1, 462.52798pt x 346.89601pt>
+<./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf, id=12, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf Graphic file (type pdf)
 <use ./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf, page 1>
 Package pdftex.def Info: ./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf , page1 used on input line 56.
@@ -369,13 +374,16 @@ pdfTeX warning: pdflatex (file ./svg-inkscape/ECG_Raw_James_svg-tex.pdf): PDF in
 > <./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf
 
 pdfTeX warning: pdflatex (file ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+> <./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf
+
+pdfTeX warning: pdflatex (file ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 > <./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf
 
 pdfTeX warning: pdflatex (file ./svg-inkscape/impulse_response_unwindowed_svg-tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 >]
 Package svg Info: Last page of `./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf' is 1 on input line 90.
  (./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf_tex
-<./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf, id=138, page=1, 462.52798pt x 346.89601pt>
+<./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf, id=133, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf Graphic file (type pdf)
 <use ./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf, page 1>
 Package pdftex.def Info: ./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf , page1 used on input line 56.
@@ -383,24 +391,15 @@ Package pdftex.def Info: ./svg-inkscape/Kaiser_Impulse_Response_svg-tex.pdf , pa
 )
 Package svg Info: Last page of `./svg-inkscape/filter_coefficients_svg-tex.pdf' is 1 on input line 91.
  (./svg-inkscape/filter_coefficients_svg-tex.pdf_tex
-<./svg-inkscape/filter_coefficients_svg-tex.pdf, id=140, page=1, 462.52798pt x 346.89601pt>
+<./svg-inkscape/filter_coefficients_svg-tex.pdf, id=135, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/filter_coefficients_svg-tex.pdf Graphic file (type pdf)
 <use ./svg-inkscape/filter_coefficients_svg-tex.pdf, page 1>
 Package pdftex.def Info: ./svg-inkscape/filter_coefficients_svg-tex.pdf , page1 used on input line 56.
 (pdftex.def)             Requested size: 287.69373pt x 215.78258pt.
 )
-Package svg Info: Calling Inkscape on input line 107.
-runsystem(inkscape "ECG_Filtered_Frequency_Domain.svg" -D --export-latex --export-filename="ECG_Filtered_Frequency_Domain_svg-tex.pdf")...executed.
-
-runsystem(mkdir -p "./svg-inkscape/")...executed.
-
-runsystem(mv "ECG_Filtered_Frequency_Domain_svg-tex.pdf" "./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf")...executed.
-
-runsystem(mv "ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex" "./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex")...executed.
-
 Package svg Info: Last page of `./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf' is 1 on input line 107.
  (./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex
-<./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf, id=142, page=1, 462.52798pt x 346.89601pt>
+<./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf, id=137, page=1, 462.52798pt x 346.89601pt>
 File: ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf Graphic file (type pdf)
 <use ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf, page 1>
 Package pdftex.def Info: ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf , page1 used on input line 56.
@@ -419,17 +418,17 @@ L3 programming layer <2026-01-19>
  ) 
 Here is how much of TeX's memory you used:
  5647 strings out of 469514
- 109152 string characters out of 5470072
- 545367 words of memory out of 5000000
+ 109125 string characters out of 5470071
+ 547367 words of memory out of 5000000
  34163 multiletter control sequences out of 15000+600000
  631971 words of font info for 55 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 94i,12n,93p,477b,375s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 94i,12n,93p,449b,375s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmex8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on report.pdf (2 pages, 297512 bytes).
+Output written on report.pdf (2 pages, 302722 bytes).
 PDF statistics:
- 350 PDF objects out of 1000 (max. 8388607)
- 221 compressed objects within 3 object streams
+ 345 PDF objects out of 1000 (max. 8388607)
+ 217 compressed objects within 3 object streams
  0 named destinations out of 1000 (max. 500000)
- 83 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 88 words of extra memory for PDF output out of 10000 (max. 10000000)
 

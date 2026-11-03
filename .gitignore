@@ -8,4 +8,23 @@ __pycache__/
 
 # images
 images/*.svg
+
+# LaTeX core build and log files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+
+# SVG package cache
 svg-inkscape/
+
+# VS Code LaTeX Workshop specific
+*.xdv
+*.xcp

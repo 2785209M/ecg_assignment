@@ -1,9 +1,9 @@
-PWD /mnt/c/Users/james/Documents/DSP/ecg_assignment/test_ecg_1/Report
+PWD /home/james/DSP/ecg_assignment/Report
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT /mnt/c/Users/james/Documents/DSP/ecg_assignment/test_ecg_1/Report/report.tex
+INPUT /home/james/DSP/ecg_assignment/Report/report.tex
 OUTPUT report.log
 INPUT /usr/share/texlive/texmf-dist/tex/latex/extsizes/extarticle.cls
 INPUT /usr/share/texlive/texmf-dist/tex/latex/extsizes/extarticle.cls
@@ -175,6 +175,8 @@ INPUT ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf
 INPUT ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf_tex
 INPUT ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf
 INPUT ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf
+INPUT ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf
+INPUT ./svg-inkscape/ECG_Raw_Frequency_Domain_svg-tex.pdf
 INPUT ./impulse_response_unwindowed.svg
 INPUT ./impulse_response_unwindowed.svg
 INPUT ./impulse_response_unwindowed.svg
@@ -221,8 +223,9 @@ INPUT ./svg-inkscape/filter_coefficients_svg-tex.pdf
 INPUT ./ECG_Filtered_Frequency_Domain.svg
 INPUT ./ECG_Filtered_Frequency_Domain.svg
 INPUT ./ECG_Filtered_Frequency_Domain.svg
-INPUT ./ECG_Filtered_Frequency_Domain_svg-tex.pdf
-INPUT ./ECG_Filtered_Frequency_Domain_svg-tex.pdf
+INPUT ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf
+INPUT ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex
+INPUT ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex
 INPUT ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf
 INPUT ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf
 INPUT ./svg-inkscape/ECG_Filtered_Frequency_Domain_svg-tex.pdf_tex
