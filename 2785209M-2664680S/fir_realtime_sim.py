@@ -29,10 +29,17 @@ filtered_ecg_signal = np.zeros(num_samples)
 for i in range(num_samples):
     filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
 
+# Delay introduced by the linear-phase FIR filter
+group_delay = (num_taps - 1) // 2
+delay_time = group_delay / sample_rate
 measurement_time = num_samples / sample_rate
-t = np.linspace(0 , measurement_time , num_samples)
+
+# Remove the samples before the window is filled (garbage data)
+t = np.linspace(0 , measurement_time , num_samples)[num_taps:]
+filtered_ecg_signal = filtered_ecg_signal[num_taps:]
 
 plt.figure()
 plt.title("ecg_filtered_time_domain")
-plt.plot(t[300:1500], filtered_ecg_signal[300:1500])
+plt.plot(t - delay_time, filtered_ecg_signal)
+plt.show()
 plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")

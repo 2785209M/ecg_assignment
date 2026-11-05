@@ -19,22 +19,29 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     
     # 2. Define the impulse Response of the ideal frequency response from stop_bands
     m = (num_taps - 1) // 2
-    h = np.zeros(num_taps)
-    h[m] = 1 # Initialize h as an all-pass filter (unit impulse)
     n = np.arange(-m, m + 1)
+    H = np.ones(num_taps)
 
-    for f1, f2 in stop_bands:
-        # Normalize Frequencies
-        f1 = f1 / sampling_rate
-        f2 = f2 / sampling_rate
+    # Apply the pass bands
+    for low, high in stop_bands:
+        low = int(low * (num_taps / sampling_rate))
+        high = int(high * (num_taps / sampling_rate))
 
-        # IFFT Formula for bandpass filter: h(n) = 1 / pi * n * [sin(w2 * n) - sin(w1 * n)]
-        # Simplified using sinc function: h(n) = [2 * f2 * sinc (2 * f2 * n)] - [2 * f1 * sinc (2 * f1 * n)]
-        h_band = 2 * f2 * np.sinc(2 * f2 * n) - (2 * f1 * np.sinc(2 * f1 * n))
+        for i in range(low, high):
+            H[i] = 0
+            if i > 0: # ensure we don't try to mirror DC (0Hz)
+                H[num_taps - i] = 0
 
-        # Principle of superposition - subtract bandpass filter from allpass filter to create a bandstop filter
-        # WARNING: Ensure stop-band ranges don't overlap to avoid signal distortion
-        h -= h_band
+    # Apply the IFFT to get the time-domain impulse response
+    h = np.real(np.fft.ifft(H))
+
+    # Shift Zero-frequency to center
+    buffer = h.copy()
+    split = num_taps - m
+
+    # Shift edges to the middle
+    h[0:m] = buffer[split:num_taps]
+    h[m:num_taps] = buffer[0:split]
 
     # 3. Calculate the Kaiser Window function using a modified bessel function of the first kind
     # Kaiser window formula: I0 [beta * sqrt(1 - {(n - alpha) / alpha} ** 2)] / I0 * beta
