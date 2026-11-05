@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{svg}
-\usepackage{minted2}
+\usepackage{minted}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em} % optional, keeps paragraphs visually separated
@@ -134,7 +134,11 @@ Our signal input is a 50Hz sin wave plus a DC shift of 0.25. The value of the DC
 
 Heartbeat was detected using a matched filter. This process requires a heartbeat template which can then be correlated with the 
 ECG signal to find the location of the heartbeats. The other team member's ECG signal was used to create this template. The ECG signal
-was first filtered using the FIR filter to remove low frequency drift and mains noise. An ideal PQRST wave was then extracted and reversed
+was first filtered using the FIR filter to remove low frequency drift and mains noise. The lower frequency cut off was increased from
+1Hz to 3Hz to remove more of the low frequency drift from the template. Although this diminishes the clarity of the PQRST wave, it was found
+to be more important for the matched filter to be working with signals without DC and low frequency drift than it was to retain a clean
+PQRST wave.
+Next, An ideal PQRST wave was then extracted and reversed
 to use as the filter coefficients of the matched filter. The PQRST template has to be reversed in order for the convolution of the FIR
 filter to act as a correlation operation between the template and the ECG signal. The output for from the matched filter is then squared to
 amplify the SNR\@. A threshold is set to detect the peaks of the output signal which correspond to heartbeats, and the heartrate is calculated 

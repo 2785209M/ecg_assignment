@@ -41,7 +41,7 @@ for i in range(len(ecg_template)):
     filtered_ecg_template[i] = prefilter2.dofilter(ecg_template[i])
 
 #extract one PQRST complex from the filtered ECG template for matching
-filtered_ecg_template = filtered_ecg_template[500:700]
+filtered_ecg_template = filtered_ecg_template[525:675]
 
 # Reverse the filtered ECG template for cross-correlation
 filtered_ecg_template = filtered_ecg_template[::-1]
@@ -90,5 +90,10 @@ plt.figure()
 plt.title(IMAGES / "heart_rate_time_domain")
 plt.plot(heartrate)
 plt.savefig(IMAGES / "heart_rate_time_domain.svg")
+
+plt.figure()
+plt.title("ecg_template_filtered_time_domain")
+plt.plot(t2[525:675], filtered_ecg_template)
+plt.savefig(IMAGES / "ecg_template_filtered_time_domain.svg")
 
 plt.show()
