@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{svg}
+\usepackage{minted2}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em} % optional, keeps paragraphs visually separated
@@ -143,4 +144,323 @@ the heartrate to 220bpm. This helps to avoid any false positives.
 
 \subsection{Subsection}
 
+\newpage
+\onecolumn
+\section{Appendix}
+\subsection{ECG Plotting Function}
+\begin{minted}{python}
+import numpy as np
+from pathlib import Path
+import matplotlib.pyplot as plt
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
+
+file_name = "James_ecg_1.tsv"
+tsv = np.loadtxt(file_name, delimiter='\t')
+ecg_signal = tsv[:,8].copy()
+
+
+sample_rate = 250
+num_samples = len(ecg_signal)
+measurement_time = num_samples / sample_rate
+t = np.linspace(0, measurement_time, num_samples)
+
+plt.figure()
+plt.title("time_domain_ecg")
+plt.plot(t,ecg_signal)
+plt.savefig(IMAGES / f"time_domain_{file_name}.svg")
+plt.show()
+\end{minted}
+
+\subsection{Windowed Band-Stop filter Implementation}
+\begin{minted}{python}
+import numpy as np
+
+# sampling_rate, frequency ranges to block, desired stop-band attenuation, width of transition window
+def getTaps(sampling_rate, stop_bands, A, transition_width):
+
+    # 1. Calculate the stopband attenuation and filter order for the kaiser window
+    if A > 50:
+        beta = 0.1102 * (A - 8.7)
+    elif 21 <= A <= 50:
+        beta = 0.5842 * (A - 21) ** 0.4 + 0.07886 * (A - 21)
+    else:
+        beta = 0
+
+    # Formula for num_taps of Kaiser window: (A - 8) / (2.285 * d_omega), where d_omega is the normalized transition width in radians
+    num_taps = int((A - 8) / (2.285 * 2 * np.pi * (transition_width / sampling_rate)))
+
+    if num_taps % 2 == 0:
+        num_taps += 1 # Ensure the number of taps is odd so the filter order will be even
+    
+    # 2. Define the impulse Response of the ideal frequency response from stop_bands
+    m = (num_taps - 1) // 2
+    h = np.zeros(num_taps)
+    h[m] = 1 # Initialize h as an all-pass filter (unit impulse)
+    n = np.arange(-m, m + 1)
+
+    for f1, f2 in stop_bands:
+        # Normalize Frequencies
+        f1 = f1 / sampling_rate
+        f2 = f2 / sampling_rate
+
+        # IFFT Formula for bandpass filter: h(n) = 1 / pi * n * [sin(w2 * n) - sin(w1 * n)]
+        # Simplified using sinc function: h(n) = [2 * f2 * sinc (2 * f2 * n)] - [2 * f1 * sinc (2 * f1 * n)]
+        h_band = 2 * f2 * np.sinc(2 * f2 * n) - (2 * f1 * np.sinc(2 * f1 * n))
+
+        # Principle of superposition - subtract bandpass filter from allpass filter to create a bandstop filter
+        # WARNING: Ensure stop-band ranges don't overlap to avoid signal distortion
+        h -= h_band
+
+    # 3. Calculate the Kaiser Window function using a modified bessel function of the first kind
+    # Kaiser window formula: I0 [beta * sqrt(1 - {(n - alpha) / alpha} ** 2)] / I0 * beta
+    kaiser_window = np.i0(beta * np.sqrt(1 - (n / m) ** 2)) / np.i0(np.array([beta]))[0]
+
+    # 4. Window the stop-band filter with our kaiser window
+    taps = h * kaiser_window
+
+    return taps, num_taps
+\end{minted}
+
+\subsection{FIR Filter Implementation}
+\begin{minted}{python}
+import collections
+
+class FIRfilter:
+    def __init__(self, _coefficients):
+        # Store the coefficients in this filter object (denoted by "self.")
+        self.coefficients = _coefficients
+        # Store the number of taps (== length of coefficients array)
+        self.num_taps = len(self.coefficients)
+        # Initialize a double-ended queue with a length of num_taps
+        self.delay_line = collections.deque(maxlen=self.num_taps)
+
+        return
+
+    def dofilter(self, v):
+        # Append incoming samples to the first index of the double-ended queue
+        self.delay_line.appendleft(v)
+        # initialize an accumulator for this window
+        result = 0
+
+        # Perform a convolution sum - multiply each sample in the buffer by its corresponding coefficient,
+        # and add the result to the accumulator
+        for i in range(len(self.delay_line)):
+            result += self.delay_line[i] * self.coefficients[i]
+
+        return result
+
+    def dofilteradaptive(self, signal, noise, learningRate):
+            """
+            Adaptive filtering using the LMS algorithm.
+            - signal: The input signal, to be filtered out
+            - desired: The desired signal to be used for adaptation AKA ecg
+            - mu: The step size for adaptation
+            - result: The filtered signal
+            """
+
+            # perform a convolution sum to modify the amplitude and phase of the pure input signal
+            filtered_signal = self.dofilter(signal)
+
+            # calculate the error (the clean signal)
+            error = noise - filtered_signal
+            for i in range(len(self.delay_line)):
+                # Update coefficients using LMS algorithm
+                self.coefficients[i] += learningRate * error * self.delay_line[i]
+
+            # Return the error signal (the difference between the desired signal and the filtered output)
+            return error
+\end{minted}
+
+\subsection{Realtime Filtering Simulation Implementation}
+\begin{minted}{python}
+import fir_design as fir_design
+import fir_filter as fir_filter
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
+ecg_signal = tsv[:,8].copy()
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
+
+# Performing FIR Filtering
+
+num_samples = len(ecg_signal) # Number of Samples in ECG signal
+sample_rate = 250 # Sampling rate of ECG signal (Hz)
+width = 1 # desired width of the transition window
+stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
+A = 30 # stopband attenuation
+
+# get the array of taps and number of taps (taps == coefficients)
+taps, num_taps = fir_design.getTaps(sample_rate, stop_Hz, A, width)
+
+# use FIRfilter to filter x with the FIR filter
+filter = fir_filter.FIRfilter(taps)
+
+# Simulate realtime filtering of the ECG
+filtered_ecg_signal = np.zeros(num_samples)
+for i in range(num_samples):
+    filtered_ecg_signal[i] = filter.dofilter(ecg_signal[i])
+
+measurement_time = num_samples / sample_rate
+t = np.linspace(0 , measurement_time , num_samples)
+
+plt.figure()
+plt.title("ecg_filtered_time_domain")
+plt.plot(t, filtered_ecg_signal)
+plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
+\end{minted}
+
+\subsection{Adaptive Filter Implementation}
+\begin{minted}{python}
+import fir_design as fir_design
+import fir_filter as fir_filter
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
+
+tsv = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
+ecg_signal = tsv[:,8].copy()
+
+# This data is not used for the adaptive filtering, but allows us to call getTaps to get the number of taps for the adaptive filter. 
+# The adaptive filter will be initialized with all coefficients set to zero.
+num_samples = len(ecg_signal) # Number of Samples in ECG signal
+sample_rate = 250 # Sampling rate of ECG signal (Hz)
+width = 1 # desired width of the transition window
+nyquist_freq = sample_rate // 2
+stop_Hz = [(0, 3), (45, nyquist_freq)] # The cutoff frequency for the filter
+A = 30 # stopband attenuation
+
+# get the number of taps (taps == coefficients). 
+taps, num_taps = fir_design.getTaps(sample_rate, stop_Hz, A, width)
+
+#Simulate realtime adaptive filtering of the ECG
+
+# Initialize adaptive filter with num_taps coefficients all set to zero
+adaptivefilter = fir_filter.FIRfilter(np.zeros(num_taps)) 
+
+# Initialize an array to hold the adaptive filtered ECG signal
+adaptive_filtered_ecg_signal = np.zeros(num_samples)
+
+# Use 50Hz as the signal for adaptive filtering (to be filtered out)
+fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples)) + 0.25
+
+# Use the filtered ECG signal as the noise reference for adaptive filtering
+for i in range(num_samples):
+    adaptive_filtered_ecg_signal[i] = adaptivefilter.dofilteradaptive(fiftyHz[i], ecg_signal[i], learningRate=0.001) 
+
+measurement_time = num_samples / sample_rate
+t = np.linspace(0 , measurement_time , num_samples)  
+
+plt.figure()
+plt.title("ecg_adaptive_filtered_time_domain")
+plt.plot(t[0:1000], adaptive_filtered_ecg_signal[0:1000])
+plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
+plt.show()
+\end{minted}
+
+\subsection{Heartbeat detection}
+\begin{minted}{python}
+import fir_design as fd
+import fir_filter as ff
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+IMAGES = Path("images")
+IMAGES.mkdir(parents = True, exist_ok = True)
+
+tsv1 = np.loadtxt("James_ecg_1.tsv", delimiter='\t')
+ecg_signal = tsv1[:,8].copy()
+
+# Performing FIR Pre-Filtering to remove DC offset, baseline wander, and 50Hz mains interference
+
+num_samples = len(ecg_signal) # Number of Samples in ECG signal
+sample_rate = 250 # Sampling rate of ECG signal (Hz)
+width = 1 # desired width of the transition window
+stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
+A = 30 # stopband attenuation
+
+# get the array of taps and number of taps (taps == coefficients)
+taps, num_taps = fd.getTaps(sample_rate, stop_Hz, A, width)
+
+# use FIRfilter to filter x with the FIR filter
+prefilter = ff.FIRfilter(taps)
+
+# Simulate realtime filtering of the ECG
+filtered_ecg_signal = np.zeros(num_samples)
+for i in range(num_samples):
+    filtered_ecg_signal[i] = prefilter.dofilter(ecg_signal[i])
+
+tsv2 = np.loadtxt("Ewan_ecg_1.tsv", delimiter='\t')
+ecg_template = tsv2[:,8].copy()
+
+# use new prefilter to filter the ECG template signal. So delay line is empty
+prefilter2 = ff.FIRfilter(taps)
+
+# Simulate realtime filtering of the ECG template
+filtered_ecg_template = np.zeros(len(ecg_template))
+for i in range(len(ecg_template)):
+    filtered_ecg_template[i] = prefilter2.dofilter(ecg_template[i])
+
+#extract one PQRST complex from the filtered ECG template for matching
+filtered_ecg_template = filtered_ecg_template[500:700]
+
+# Reverse the filtered ECG template for cross-correlation
+filtered_ecg_template = filtered_ecg_template[::-1]
+
+matched_filter = ff.FIRfilter(filtered_ecg_template)
+
+matched_filtered_ecg_signal = np.zeros(num_samples)
+
+num_samples_template = len(matched_filtered_ecg_signal) # Number of Samples in ECG signal
+measurement_time = num_samples_template / sample_rate
+t2 = np.linspace(0 , measurement_time , num_samples_template)
+
+#Realtime matched filtering of the filtered ECG signal with the filtered ECG template
+last_peak_index = 0
+current_peak_index = 0
+heartrate = []
+cooldown_period = 68  # 68/250Hz - limits heartrate to 220bpm
+threshold = 3*10**-11
+
+cooldown = 0
+for i in range(num_samples):
+    matched_filtered_ecg_signal[i] = matched_filter.dofilter(filtered_ecg_signal[i])
+
+    # Square the matched filtered signal to enhance the peaks for easier detection of R-peaks
+    matched_filtered_ecg_signal[i] = matched_filtered_ecg_signal[i] * matched_filtered_ecg_signal[i]
+
+    if cooldown > 0:
+        cooldown -= 1
+
+    elif matched_filtered_ecg_signal[i] > threshold:
+        last_peak_index = current_peak_index        
+        current_peak_index = i
+
+        if last_peak_index > 0: # Ensure there are at least two beats before calculating heartrate
+            heartrate.append(60 * sample_rate / (current_peak_index - last_peak_index))
+
+        cooldown = cooldown_period
+
+
+plt.figure()
+plt.title("ecg_matched_filtered_time_domain")
+plt.plot(t2, matched_filtered_ecg_signal)
+plt.savefig(IMAGES / "ecg_matched_filtered_time_domain.svg")
+
+plt.figure()
+plt.title(IMAGES / "heart_rate_time_domain")
+plt.plot(heartrate)
+plt.savefig(IMAGES / "heart_rate_time_domain.svg")
+
+plt.show()
+\end{minted}
 \end{document}

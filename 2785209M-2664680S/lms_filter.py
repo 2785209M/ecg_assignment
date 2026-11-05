@@ -30,7 +30,7 @@ adaptivefilter = fir_filter.FIRfilter(np.zeros(num_taps))
 # Initialize an array to hold the adaptive filtered ECG signal
 adaptive_filtered_ecg_signal = np.zeros(num_samples)
 
-#Use 50Hz as the signal for adaptive filtering (to be filtered out)
+# Use 50Hz as the signal for adaptive filtering (to be filtered out)
 fiftyHz = np.sin(2 * np.pi * 50 / sample_rate * np.arange(num_samples)) + 0.25
 
 # Use the filtered ECG signal as the noise reference for adaptive filtering
