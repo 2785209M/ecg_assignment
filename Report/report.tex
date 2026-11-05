@@ -98,7 +98,8 @@ These coefficients can now be passed into the fir\_filter class to simulate real
 % Ewan's Sections:
 
 \section{Simulation of Real-time Filtering}
-\subsection{Subsection}
+In order to simulate realtime filtering of the data, a python class was created to represent the FIR class. This class takes the taps (calculated from the filter design function) as it's sole argument. Additionally, the class has 3 data members; coefficients is an array of the filter's taps; num{\_}taps is the length of coefficients; And delay{\_}line is a double ended queue with a maximum length of num{\_}taps. A double ended queue was used as the data structure for the delay line because, when given a maximum length, it acts similarly to a ring buffer where adding a new value to a full queue causes one value to fall off the other end. This is an efficient implementation, because it does not require manual shifting of the delay line.\\ The function member used for simulating realtime processing is simply dofilter. This takes a scalar input of the newest sample in the data, appends it to the delay line and then loops through the delay line to calculate a cumulative sum of delay{\_}line[i] * coefficients[i]. It returns the result of this summation. To simulate realtime input to the filter in python, a for loop iterates through the ecg data and passes it sample by sample to the FIR filter for processing.
+\subsection{Filter Design}
 
 \begin{equation}
 Math Block
@@ -112,9 +113,23 @@ Normal Sized text
 \textbf{bold text}
 
 \section{Adaptive LMS Filter}
-\subsection{Subsection}
+The doFilterAdaptive function member extends the FIR filter class for adaptive filtering. The arguments to this function are signal, noise, and learningRate. The signal argument is the signal that we are trying to remove from our ecg. The noise argument is our noisy ecg signal, and learningRate is the learning rate/step size of our adaptive algorithm. The function initially calls the doFilter function on the signal for the forward pass before updating the weights of the filter using a least mean squares method:
+
+\begin{figure}[htbp]
+\begin{equation}
+error = noise - filtered{\_}signal
+\end{equation}
+\begin{equation}
+coefficients[i] = coefficients[i] + learningRate \cdot error \cdot delay{\_}line[i]
+\end{equation}
+\end{figure}
+
+Our signal input is a 50Hz sin wave plus a DC shift of 0.25. The value of the DC shift was found experimentally with the goal of removing the DC shift from the signal without degrading the quality of the PQRST wave. The learning rate was also found experimentally such that the filter coefficients converge quickly without exploding. 
+
+\subsection{Comparison with FIR Filter}
 
 \section{Heartbeat Detection}
+
 \subsection{Subsection}
 
 \end{document}
