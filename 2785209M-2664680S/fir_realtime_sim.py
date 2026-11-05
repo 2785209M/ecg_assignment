@@ -15,7 +15,7 @@ IMAGES.mkdir(parents = True, exist_ok = True)
 num_samples = len(ecg_signal) # Number of Samples in ECG signal
 sample_rate = 250 # Sampling rate of ECG signal (Hz)
 width = 1 # desired width of the transition window
-stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
+stop_Hz = [(0, 1), (45, sample_rate // 2)] # The cutoff frequency for the filter
 A = 30 # stopband attenuation
 
 # get the array of taps and number of taps (taps == coefficients)
@@ -34,5 +34,5 @@ t = np.linspace(0 , measurement_time , num_samples)
 
 plt.figure()
 plt.title("ecg_filtered_time_domain")
-plt.plot(t, filtered_ecg_signal)
+plt.plot(t[300:1500], filtered_ecg_signal[300:1500])
 plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")

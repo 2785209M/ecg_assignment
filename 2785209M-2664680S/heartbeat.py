@@ -15,7 +15,7 @@ ecg_signal = tsv1[:,8].copy()
 num_samples = len(ecg_signal) # Number of Samples in ECG signal
 sample_rate = 250 # Sampling rate of ECG signal (Hz)
 width = 1 # desired width of the transition window
-stop_Hz = [(0, 3), (40, sample_rate // 2)] # The cutoff frequency for the filter
+stop_Hz = [(0, 3), (45, sample_rate // 2)] # The cutoff frequency for the filter
 A = 30 # stopband attenuation
 
 # get the array of taps and number of taps (taps == coefficients)

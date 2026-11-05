@@ -21,7 +21,7 @@ The experiment began by taking an ECG recording and plotting it in python using 
 
 \subsection{Structure of PQRST Complex}
 \includesvg[width=\columnwidth]{ECG_Raw_James}
-It is important that we preserve the frequencies used to construct the PQRST complex, otherwise we would be destroying important data from the ECG. 
+It is important that we preserve the frequencies used to construct the PQRST complex, otherwise we would be destroying important data from the ECG\@. 
 
 \subsection{Sources of Noise in the ECG}
 % TODO update this plot with the specific locations of the individual PQRST frequencies
@@ -100,6 +100,7 @@ These coefficients can now be passed into the fir\_filter class to simulate real
 \section{Simulation of Real-time Filtering}
 In order to simulate realtime filtering of the data, a python class was created to represent the FIR class. This class takes the taps (calculated from the filter design function) as it's sole argument. Additionally, the class has 3 data members; coefficients is an array of the filter's taps; num{\_}taps is the length of coefficients; And delay{\_}line is a double ended queue with a maximum length of num{\_}taps. A double ended queue was used as the data structure for the delay line because, when given a maximum length, it acts similarly to a ring buffer where adding a new value to a full queue causes one value to fall off the other end. This is an efficient implementation, because it does not require manual shifting of the delay line.\\ The function member used for simulating realtime processing is simply dofilter. This takes a scalar input of the newest sample in the data, appends it to the delay line and then loops through the delay line to calculate a cumulative sum of delay{\_}line[i] * coefficients[i]. It returns the result of this summation. To simulate realtime input to the filter in python, a for loop iterates through the ecg data and passes it sample by sample to the FIR filter for processing.
 \subsection{Filter Design}
+To filter our ECG signal, we used a bandpass filter with a lower cutoff frequency of 0.5Hz and an upper cutoff frequency of 45Hz.
 
 \begin{equation}
 Math Block
@@ -129,6 +130,16 @@ Our signal input is a 50Hz sin wave plus a DC shift of 0.25. The value of the DC
 \subsection{Comparison with FIR Filter}
 
 \section{Heartbeat Detection}
+
+Heartbeat was detected using a matched filter. This process requires a heartbeat template which can then be correlated with the 
+ECG signal to find the location of the heartbeats. The other team member's ECG signal was used to create this template. The ECG signal
+was first filtered using the FIR filter to remove low frequency drift and mains noise. An ideal PQRST wave was then extracted and reversed
+to use as the filter coefficients of the matched filter. The PQRST template has to be reversed in order for the convolution of the FIR
+filter to act as a correlation operation between the template and the ECG signal. The output for from the matched filter is then squared to
+amplify the SNR\@. A threshold is set to detect the peaks of the output signal which correspond to heartbeats, and the heartrate is calculated 
+as the inverse of the time between detected peaks. A heuristic is applied by setting a cooldown time between detected peaks which limits
+the heartrate to 220bpm. This helps to avoid any false positives. 
+
 
 \subsection{Subsection}
 
