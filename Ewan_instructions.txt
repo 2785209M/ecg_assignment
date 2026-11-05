@@ -1,0 +1,44 @@
+sudo apt update && sudo apt install texlive-latex-recommended texlive-latex-extra latexmk inkscape
+
+{
+    "git.confirmSync": false,
+    "github.copilot.nextEditSuggestions.eagerness": "low",
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "chat.viewSessions.orientation": "stacked",
+    "git.autofetch": true,
+    "explorer.confirmDelete": false,
+    "haskell.manageHLS": "GHCup",
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+                "-shell-escape",
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-pdf",
+                "-outdir=%OUTDIR%",
+                "%DOC%"
+            ],
+            "env": {}
+        },
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-shell-escape",
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ],
+            "env": {}
+        }
+    ]
+}
