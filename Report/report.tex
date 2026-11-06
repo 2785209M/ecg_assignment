@@ -150,7 +150,8 @@ However, the DC term was also found to slightly decrease the strength of the T w
 after it.\\
 Compared to the FIR filter the adaptive filter is able to perfectly remove the 50Hz mains noise and DC from the signal, whereas the FIR filter is
 only able to attenuate them. This, however, comes at the cost of an initial convergence time and a more computationally complex implementation.
-In both cases, removal of the low frequency drift comes at the cost of some distortion of the PQRST wave.
+In both cases, removal of the low frequency drift comes at the cost of some distortion of the PQRST wave, but this distortion was more 
+pronounced with the adaptive filter.
 
 \subsection{Comparison with FIR Filter}
 
@@ -167,7 +168,8 @@ to use as the filter coefficients of the matched filter. The PQRST template has 
 filter to act as a correlation operation between the template and the ECG signal. The output from the matched filter is then squared to
 amplify the SNR\@. A threshold is set to detect the peaks of the output signal which correspond to heartbeats, and the heartrate is calculated 
 as the inverse of the time between detected peaks. A heuristic is applied by setting a cooldown time between detected peaks which limits
-the heartrate to 220bpm. This helps to avoid any false positives. A dataflow diagram can be seen below:
+the heartrate to 220bpm. This helps to avoid any false positives. A dataflow diagram can be seen below:\\
+\\
 
 \includesvg[width=\columnwidth]{heartbeat_dataflow.drawio}
 
