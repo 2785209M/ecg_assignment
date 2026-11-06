@@ -31,8 +31,8 @@
 \PYG{c+c1}{\PYGZsh{} Initialize an array to hold the adaptive filtered ECG signal}
 \PYG{n}{adaptive\PYGZus{}filtered\PYGZus{}ecg\PYGZus{}signal} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{zeros}\PYG{p}{(}\PYG{n}{num\PYGZus{}samples}\PYG{p}{)}
 
-\PYG{c+c1}{\PYGZsh{} Use 50Hz as the signal for adaptive filtering (to be filtered out)}
-\PYG{n}{fiftyHz} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi} \PYG{o}{*} \PYG{l+m+mi}{50} \PYG{o}{/} \PYG{n}{sample\PYGZus{}rate} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arange}\PYG{p}{(}\PYG{n}{num\PYGZus{}samples}\PYG{p}{))} \PYG{o}{+} \PYG{l+m+mf}{0.25}
+\PYG{c+c1}{\PYGZsh{} Use 50Hz + DC shift as the signal for adaptive filtering (to be filtered out)}
+\PYG{n}{fiftyHz} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{sin}\PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{pi} \PYG{o}{*} \PYG{l+m+mi}{50} \PYG{o}{/} \PYG{n}{sample\PYGZus{}rate} \PYG{o}{*} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arange}\PYG{p}{(}\PYG{n}{num\PYGZus{}samples}\PYG{p}{))} \PYG{o}{+} \PYG{l+m+mf}{0.3}
 
 \PYG{c+c1}{\PYGZsh{} Use the filtered ECG signal as the noise reference for adaptive filtering}
 \PYG{k}{for} \PYG{n}{i} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{n}{num\PYGZus{}samples}\PYG{p}{):}
