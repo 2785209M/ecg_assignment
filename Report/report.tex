@@ -18,7 +18,7 @@
 % James' Sections:
 
 \section{Plotting the ECG Signal}
-The experiment began by taking an ECG recording and plotting it in python using matplotlib. The electrodes were attached just above the hip and on the front of the shoulder.
+The experiment began by taking an ECG recording and plotting it in Python using Matplotlib. The electrodes were attached just above the hip and on the front of the shoulder.
 
 \subsection{Structure of PQRST Complex}
 \includesvg[width=\columnwidth]{ECG_Raw_James}
@@ -28,43 +28,51 @@ It is important that we preserve the frequencies used to construct the PQRST com
 % TODO update this plot with the specific locations of the individual PQRST frequencies
 \includesvg[width=\columnwidth]{ECG_Raw_Frequency_Domain}
 The main sources of noise in an ECG are 50Hz mains interference, Breathing, and random noise caused by movement.
-There is also a DC offset which shifts the entire signal by a certain amount, caused by potential difference formed between the electrodes and the skin.\\
+There is also a DC component which shifts the entire signal by a certain amount, caused by potential difference formed between the electrodes and the skin.\\
 The human heart rate can go as low as 0.5Hz at complete rest. Considering this, the filter should remove frequencies below 0.5Hz (This includes DC shift and Breathing) and above 45Hz (Mains noise and other high frequency interference).
-Although this leaves in random noise cause by movement, the core frequencies of the PQRST complex must be retained for the signal to remain accurate for monitoring purposes.
+Although this leaves in random noise caused by movement, the core frequencies of the PQRST complex must be retained for the signal to remain accurate for monitoring purposes.
 
 \section{Generating the FIR Coefficients}
 
+\subsection{Filter Design}
+To filter our ECG signal, we used a bandpass filter with a lower cutoff frequency of 3Hz and an upper cutoff frequency of 40Hz (implemented via stop-bands from 0--3Hz and 40--125Hz).
+
 \subsection{Stop-Band Filter}
-A stop-band filter was implemented in this code by utilizing an all-pass filter, a band-pass filter, and the principle of superposition. This was done instead of using a pure band-stop filter in order to keep the code simple and elegant, as it is easier to remove frequencies from an all-pass filter than it is to combine multiple separate lo-pass and hi-pass filters together.\\
-First, the number of coefficients needed for the windowing function to work had to be calculated. For a Kaiser Window, this changes based on the desired stopband attenuation and transition width. The formula is displayed in the next subsection in Equation (3).
-Then, using the number of taps, an ideal all-pass filter was defined by creating an array of zeros, with an index stretching from indices of -m to m (where m = num\_taps / 2), with the central value at index m set to 1. This represents the ideal impulse response.
-Finally the array $n$ is initialized, which represents discrete time indices from -m to m. Evalutating functions over this symmetric time vector is what gives the filter linear phase and constant group delay.
-\\This all-pass filter is then modified in a for loop iterating over the array of stop bands.
-The stop bands live in the frequency domain, so an inverse discrete time fourier transform is applied to convert them into the time-domain before they are subtracted from the impulse response:
+A stop-band filter was implemented in this code by utilizing an all-pass filter and setting specific indices within it to zero before converting it into the time domain.\\
+To create the all-pass filter, first the number of coefficients needed for the windowing function to work had to be calculated. For a Kaiser Window, this changes based on the desired stopband attenuation and transition width.
 
-\begin{figure}[htbp]
+number of taps:
 \begin{equation}
-h_{\text{band}}[n] = 2 \cdot f_2 \cdot \operatorname{sinc}(2 \cdot f_2 \cdot n) - 2 \cdot f_1 \cdot \operatorname{sinc}(2 \cdot f_1 \cdot n)
+N = \left\lfloor \frac{A - 8}{2.285 \cdot 2\pi \left( \frac{\Delta f}{f_s} \right)} \right\rfloor
 \end{equation}
-{\tiny (Note: Doing the IDFT manually is less efficient than using np.IFFT() and was done purely for analytical purposes)}
-\end{figure}
 
-After this for-loop is complete, h will be a raw band-stop filter (sharp edges in the frequency domain, causing ringing due to the Gibbs Phenomenon).
-The Gibbs phenonenom can be seen in the impulse response of the filter as the side lobes aren't able to settle to zero before they get truncated:
-
+An ideal all-pass filter ($H$) was defined in the frequency domain by creating an array of all ones with length \texttt{num\_taps}.
+This all-pass filter was then modified in a for loop to remove the specific stop-band frequencies, by setting the indices which correspond to those frequencies to zero - Not including the DC component.
+Finally, an Inverse Fourier Transform is done on the resulting array after all of the stop bands have been iterated over. This results in an unwindowed stop-band filter which would result in ringing due to the Gibbs phenomenon if applied raw.
+The Gibbs phenomenon can be seen in the impulse response of the filter as the side lobes aren't able to settle to zero before they get truncated:
 \includesvg[width = \columnwidth]{impulse_response_unwindowed}
+To fix this, it must be multiplied with a windowing function.\\
 
-To fix this, it must be multiplied with a windowing function.
+This frequency sampling approach approximates the analytical method of calculating the ideal time-domain band-pass impulse response using sinc functions, and subtracting it from a unit impulse ($\delta[n]$) via the principle of superposition:
+
+\begin{equation}
+h_{\text{band}}[n] = 2 f_2 \operatorname{sinc}(2 f_2 n) - 2 f_1 \operatorname{sinc}(2 f_1 n)
+\end{equation}
+\begin{equation}
+h_{\text{stop}}[n] = \delta[n] - \sum h_{\text{band}}[n]
+\end{equation}
+{\tiny (Note: Calculating the IDFT analytically via sinc functions is less convenient for multi-band filters than using \texttt{np.fft.ifft()}, 
+        and manual $\frac{\sin(x)}{x}$ evaluation requires handling the division-by-zero edge case at $n = 0$.)}
 
 \subsection{The Kaiser Window}
 The Kaiser window was chosen for its flexibility and simplicity. It gives greater flexibility than other windowing functions, 
 since the user has control over both the size of the transition window and the stopband attenuation. This allows you to find a precise balance between a narrow central peak (sharper cutoff) and flatter sidelobes (better noise rejection) in the impulse response.
 With specific stopband attenuations, it is also possible for the Kaiser window to mimic other windowing functions.
-Furthermore, the Kaiser filter has straightforward formulas to calculate beta (the stopband attenuation parameter) and num\_taps (the number of coefficients needed for the filter), 
+Furthermore, the Kaiser filter has straightforward formulas to calculate beta (the stopband attenuation parameter) and \texttt{num\_taps} (the number of coefficients needed for the filter), 
 allowing it to be practically calculated almost entirely in code without external libraries.
+The array $n$ represents discrete time indices from $-m$ to $m$. Evaluating functions over this symmetric time vector is what gives the filter linear phase and constant group delay.
 The formulae used in the code are as follows:
 
-\begin{figure}[htbp]
 beta parameter:
 \begin{equation}
 \beta = 
@@ -75,16 +83,10 @@ beta parameter:
 \end{cases}
 \end{equation}
 
-number of taps:
-\begin{equation}
-N = \left\lfloor \frac{A - 8}{2.285 \cdot 2\pi \left( \frac{\Delta f}{f_s} \right)} \right\rfloor
-\end{equation}
-
 kaiser window:
 \begin{equation}
 w[n] = \frac{I_0 \left( \beta \sqrt{1 - \left( \frac{n}{m} \right)^2} \right)}{I_0(\beta)}
 \end{equation}
-\end{figure}
 
 The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients, producing this impulse response in the time domain:
 
@@ -93,7 +95,7 @@ The FIR filter is then multiplied by the Kaiser window, to create the final arra
 
 As you can see, this impulse response has a large, narrow central peak and sidelobes that gradually decay to zero as they approach tap 0 and tap 383.
 This shows that our windowing function has successfully removed ringing due to the Gibbs Phenomenon.
-These coefficients can now be passed into the fir\_filter class to simulate realtime filtering.
+These coefficients can now be passed into the \texttt{fir\_filter} class to simulate realtime filtering.
 
 
 % Ewan's Sections:
@@ -123,14 +125,12 @@ The signal argument is the signal that we are trying to remove from our ecg. The
  is the learning rate/step size of our adaptive algorithm. The function initially calls the doFilter function on the signal for
  the forward pass before updating the weights of the filter using a least mean squares method:
 
-\begin{figure}[htbp]
 \begin{equation}
-error = noise - filtered{\_}signal
+\text{error} = \text{noise} - \text{filtered\_signal}
 \end{equation}
 \begin{equation}
-coefficients[i] = coefficients[i] + learningRate \cdot error \cdot delay{\_}line[i]
+\text{coefficients}[i] = \text{coefficients}[i] + \text{learningRate} \cdot \text{error} \cdot \text{delay\_line}[i]
 \end{equation}
-\end{figure}
 
 Our signal input is a 50Hz sin wave plus a DC shift of 0.3. The value of the DC shift was found experimentally with the goal of 
 removing the DC shift from the signal without degrading the quality of the PQRST wave. The learning rate was also found experimentally 
@@ -157,9 +157,9 @@ was first filtered using the FIR filter to remove low frequency drift and mains 
 1Hz to 3Hz to remove more of the low frequency drift from the template. Although this diminishes the clarity of the PQRST wave, it was found
 to be more important for the matched filter to be working with signals without DC and low frequency drift than it was to retain a clean
 PQRST wave.
-Next, An ideal PQRST wave was then extracted and reversed
+Next, an ideal PQRST wave was then extracted and reversed
 to use as the filter coefficients of the matched filter. The PQRST template has to be reversed in order for the convolution of the FIR
-filter to act as a correlation operation between the template and the ECG signal. The output for from the matched filter is then squared to
+filter to act as a correlation operation between the template and the ECG signal. The output from the matched filter is then squared to
 amplify the SNR\@. A threshold is set to detect the peaks of the output signal which correspond to heartbeats, and the heartrate is calculated 
 as the inverse of the time between detected peaks. A heuristic is applied by setting a cooldown time between detected peaks which limits
 the heartrate to 220bpm. This helps to avoid any false positives. 
@@ -183,7 +183,6 @@ file_name = "James_ecg_1.tsv"
 tsv = np.loadtxt(file_name, delimiter='\t')
 ecg_signal = tsv[:,8].copy()
 
-
 sample_rate = 250
 num_samples = len(ecg_signal)
 measurement_time = num_samples / sample_rate
@@ -196,14 +195,46 @@ plt.savefig(IMAGES / f"time_domain_{file_name}.svg")
 plt.show()
 \end{minted}
 
-\subsection{Windowed Band-Stop filter Implementation}
+\subsection{Windowed Band-Stop Filter Coefficients Implementation}
 \begin{minted}{python}
 import numpy as np
 
 # sampling_rate, frequency ranges to block, desired stop-band attenuation, width of transition window
 def getTaps(sampling_rate, stop_bands, A, transition_width):
 
-    # 1. Calculate the stopband attenuation and filter order for the kaiser window
+    # Formula for num_taps of Kaiser window: (A - 8) / (2.285 * d_omega), where d_omega is the normalized transition width in radians
+    num_taps = int((A - 8) / (2.285 * 2 * np.pi * (transition_width / sampling_rate)))
+
+    if num_taps % 2 == 0:
+        num_taps += 1 # Ensure the number of taps is odd so the filter order will be even
+
+    # Define an ideal all-pass filter in the frequency domain
+    H = np.ones(num_taps)
+
+    # Apply the stop bands to the all-pass filter
+    for low, high in stop_bands:
+        # Normalize frequencies
+        low = int(low * (num_taps / sampling_rate))
+        high = int(high * (num_taps / sampling_rate))
+
+        for i in range(low, high):
+            H[i] = 0
+            if i > 0: # ensure we don't try to mirror DC (0Hz)
+                H[num_taps - i] = 0
+
+    # Apply the IFFT to get the time-domain impulse response of the stop-band filter
+    h = np.real(np.fft.ifft(H))
+
+    # Shift Zero-frequency to center
+    m = (num_taps - 1) // 2 # Define the centre index
+    buffer = h.copy()
+    split = num_taps - m
+    h[0:m] = buffer[split:num_taps]
+    h[m:num_taps] = buffer[0:split]
+
+    n = np.arange(-m, m + 1) # Define a symmetric time-index array centred at zero for the kaiser function
+
+    # Calculate beta for the Kaiser window
     if A > 50:
         beta = 0.1102 * (A - 8.7)
     elif 21 <= A <= 50:
@@ -211,36 +242,11 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     else:
         beta = 0
 
-    # Formula for num_taps of Kaiser window: (A - 8) / (2.285 * d_omega), where d_omega is the normalized transition width in radians
-    num_taps = int((A - 8) / (2.285 * 2 * np.pi * (transition_width / sampling_rate)))
-
-    if num_taps % 2 == 0:
-        num_taps += 1 # Ensure the number of taps is odd so the filter order will be even
-    
-    # 2. Define the impulse Response of the ideal frequency response from stop_bands
-    m = (num_taps - 1) // 2
-    h = np.zeros(num_taps)
-    h[m] = 1 # Initialize h as an all-pass filter (unit impulse)
-    n = np.arange(-m, m + 1)
-
-    for f1, f2 in stop_bands:
-        # Normalize Frequencies
-        f1 = f1 / sampling_rate
-        f2 = f2 / sampling_rate
-
-        # IFFT Formula for bandpass filter: h(n) = 1 / pi * n * [sin(w2 * n) - sin(w1 * n)]
-        # Simplified using sinc function: h(n) = [2 * f2 * sinc (2 * f2 * n)] - [2 * f1 * sinc (2 * f1 * n)]
-        h_band = 2 * f2 * np.sinc(2 * f2 * n) - (2 * f1 * np.sinc(2 * f1 * n))
-
-        # Principle of superposition - subtract bandpass filter from allpass filter to create a bandstop filter
-        # WARNING: Ensure stop-band ranges don't overlap to avoid signal distortion
-        h -= h_band
-
-    # 3. Calculate the Kaiser Window function using a modified bessel function of the first kind
+    # Calculate the Kaiser Window function using a modified bessel function of the first kind
     # Kaiser window formula: I0 [beta * sqrt(1 - {(n - alpha) / alpha} ** 2)] / I0 * beta
     kaiser_window = np.i0(beta * np.sqrt(1 - (n / m) ** 2)) / np.i0(np.array([beta]))[0]
 
-    # 4. Window the stop-band filter with our kaiser window
+    # Window the stop-band filter with our kaiser window
     taps = h * kaiser_window
 
     return taps, num_taps
@@ -277,10 +283,10 @@ class FIRfilter:
     def dofilteradaptive(self, signal, noise, learningRate):
             """
             Adaptive filtering using the LMS algorithm.
-            - signal: The input signal, to be filtered out
-            - desired: The desired signal to be used for adaptation AKA ecg
-            - mu: The step size for adaptation
-            - result: The filtered signal
+- signal: The input signal, to be filtered out
+- desired: The desired signal to be used for adaptation AKA ecg
+- mu: The step size for adaptation
+- result: The filtered signal
             """
 
             # perform a convolution sum to modify the amplitude and phase of the pure input signal

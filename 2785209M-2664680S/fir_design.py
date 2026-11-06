@@ -8,9 +8,6 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
 
     if num_taps % 2 == 0:
         num_taps += 1 # Ensure the number of taps is odd so the filter order will be even
-    
-    m = (num_taps - 1) // 2 # Define the centre index
-    n = np.arange(-m, m + 1) # Define a symmetric time-index array cetnred at zero for the kaiser function
 
     # Define an ideal all-pass filter in the frequency domain
     H = np.ones(num_taps)
@@ -30,10 +27,13 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     h = np.real(np.fft.ifft(H))
 
     # Shift Zero-frequency to center
+    m = (num_taps - 1) // 2 # Define the centre index
     buffer = h.copy()
     split = num_taps - m
     h[0:m] = buffer[split:num_taps]
     h[m:num_taps] = buffer[0:split]
+
+    n = np.arange(-m, m + 1) # Define a symmetric time-index array centred at zero for the kaiser function
 
     # Calculate beta for the Kaiser window
     if A > 50:
