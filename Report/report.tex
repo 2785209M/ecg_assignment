@@ -34,9 +34,6 @@ Although this leaves in random noise caused by movement, the core frequencies of
 
 \section{Generating the FIR Coefficients}
 
-\subsection{Filter Design}
-To filter our ECG signal, we used a bandpass filter with a lower cutoff frequency of 3Hz and an upper cutoff frequency of 40Hz (implemented via stop-bands from 0--3Hz and 40--125Hz).
-
 \subsection{Stop-Band Filter}
 A stop-band filter was implemented in this code by utilizing an all-pass filter and setting specific indices within it to zero before converting it into the time domain.\\
 To create the all-pass filter, first the number of coefficients needed for the windowing function to work had to be calculated. For a Kaiser Window, this changes based on the desired stopband attenuation and transition width.
@@ -115,9 +112,6 @@ It can also be seen that mains noise has been completely removed from the filter
 
 \includesvg[width=\columnwidth]{ecg_filtered_time_domain_whole}
 \includesvg[width=\columnwidth]{ecg_filtered_time_domain_zoomed}
-
-Should we maybe move this section to the FIR filter section? Seems more appropriate there and can go through the shape of our filter and
-the reasoning behind it as well as showing our filter in frequency domain and how the windowing affects this.
 
 \section{Adaptive LMS Filter}
 The doFilterAdaptive function member extends the FIR filter class for adaptive filtering. The arguments to this function are signal, noise, and learningRate.
