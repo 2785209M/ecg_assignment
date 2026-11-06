@@ -162,7 +162,7 @@ ecg_template = tsv2[:, 8].copy()
 num_samples = len(ecg_template)
 sample_rate = 250
 width = 1
-stop_Hz = [(0, 0.5), (40, sample_rate // 2)]  # Stop bands: below 0.5 Hz and above 40 Hz
+stop_Hz = [(0, 3), (40, sample_rate // 2)]  # Stop bands: below 0.5 Hz and above 40 Hz
 A = 30
 
 

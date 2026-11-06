@@ -35,11 +35,24 @@ delay_time = group_delay / sample_rate
 measurement_time = num_samples / sample_rate
 
 # Remove the samples before the window is filled (garbage data)
+t_original = np.linspace(0 , measurement_time , num_samples)
 t = np.linspace(0 , measurement_time , num_samples)[num_taps:]
 filtered_ecg_signal = filtered_ecg_signal[num_taps:]
 
 plt.figure()
 plt.title("ecg_filtered_time_domain")
-plt.plot(t - delay_time, filtered_ecg_signal)
+plt.plot((t - delay_time)[1000:3000], filtered_ecg_signal[1000:3000])
+plt.ylabel("Amplitude (V)")
+plt.xlabel("Time (s)")
 plt.show()
-plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
+plt.savefig(IMAGES / "ecg_filtered_time_domain_zoomed.svg", bbox_inches='tight')
+
+plt.figure()
+plt.title("ecg_unfiltered_time_domain")
+plt.plot(t_original[1000:3000], ecg_signal[1000:3000])
+plt.ylabel("Amplitude (V)")
+plt.xlabel("Time (s)")
+plt.show()
+plt.savefig(IMAGES / "ecg_unfiltered_time_domain_zoomed.svg", bbox_inches='tight')
+
+
