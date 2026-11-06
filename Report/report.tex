@@ -130,6 +130,8 @@ Our signal input is a 50Hz sin wave plus a DC shift of 0.3. The value of the DC 
 removing the DC shift from the signal without degrading the quality of the PQRST wave. The learning rate was also found experimentally 
 such that the filter coefficients converge quickly without exploding. A dataflow diagram can be seen below:
 
+\includesvg[width=\columnwidth]{adaptive_filter_dataflow.drawio}
+
 As well as the output from the adaptive filter:
 
 \includesvg[width=\columnwidth]{ecg_adaptive_filtered_time_domain_whole}
