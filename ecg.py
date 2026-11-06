@@ -80,12 +80,26 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     # Window the stop-band filter with our kaiser window
     taps = h * kaiser_window
 
-    # plt.figure()
-    # plt.plot(taps)
-    # plt.title("Impulse Response Unwindowed (%d taps)" % num_taps)
-    # plt.grid(True)
-    # plt.savefig(IMAGES / "impulse_response_unwindowed.svg")
-
+    plt.figure()
+    plt.plot(h)
+    plt.title("Impulse Response Unwindowed (%d taps)" % num_taps)
+    plt.grid(True)
+    plt.savefig(IMAGES / "impulse_response_unwindowed_time_domain.svg")
+    plt.figure()
+    plt.plot(kaiser_window)
+    plt.title("Kaiser Window (%d taps)" % num_taps)
+    plt.grid(True)
+    plt.savefig(IMAGES / "Kaiser_Window.svg")
+    plt.figure()
+    plt.plot(H[:m])
+    plt.title("Coefficients Unwindowed frequency domain (%d taps)" % num_taps)
+    plt.grid(True)
+    plt.savefig(IMAGES / "Coefficients_Unwindowed_Frequency_Domain.svg")
+    plt.figure()
+    plt.plot(np.fft.fft(taps)[:m])
+    plt.title("Coefficients Windowed Frequency Domain (%d taps)" % num_taps)
+    plt.grid(True)
+    plt.savefig(IMAGES / "Coefficients_Windowed_Frequency_Domain.svg")
 
     return taps, num_taps
 
@@ -94,13 +108,12 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
 # FIR filtering
 # ---------------------------------------------------------------------------
 
-num_samples = len(ecg_signal)  # Number of samples in the ECG signal
-sample_rate = 250              # Sampling rate of the ECG signal (Hz)
-width = 0.5                      # Width of the transition window (Hz)
-stop_Hz = [(0, 0.5), (40, sample_rate // 2)]  # Stop bands
-A = 20                         # Stop-band attenuation (dB)
-
-# Get the filter coefficients (taps) and the number of taps
+num_samples = len(ecg_signal) # Number of Samples in ECG signal
+sample_rate = 250 # Sampling rate of ECG signal (Hz)
+width = 0.5 # desired width of the transition window
+stop_Hz = [(0, 1), (45, sample_rate // 2)] # The cutoff frequency for the filter
+A = 30 # stopband attenuation
+#Get the filter coefficients (taps) and the number of taps
 taps, num_taps = getTaps(sample_rate, stop_Hz, A, width)
 
 fir = ff.FIRfilter(taps)
@@ -155,31 +168,31 @@ delay_time = group_delay / sample_rate
 # ECG template
 # ---------------------------------------------------------------------------
 
-tsv2 = np.loadtxt("Ewan_ecg_1.tsv", delimiter="\t")
-ecg_template = tsv2[:, 8].copy()
+# tsv2 = np.loadtxt("Ewan_ecg_1.tsv", delimiter="\t")
+# ecg_template = tsv2[:, 8].copy()
 
-num_samples = len(ecg_template)
-sample_rate = 250
-width = 1
-stop_Hz = [(0, 3), (40, sample_rate // 2)]  # Stop bands: below 0.5 Hz and above 40 Hz
-A = 30
+# num_samples = len(ecg_signal) # Number of Samples in ECG signal
+# sample_rate = 250 # Sampling rate of ECG signal (Hz)
+# width = 0.5 # desired width of the transition window
+# stop_Hz = [(0, 1), (45, sample_rate // 2)] # The cutoff frequency for the filter
+# A = 30 # stopband attenuation
 
 
-# Get the filter coefficients (taps) and the number of taps
-template_taps, num_template_taps = getTaps(sample_rate, stop_Hz, A, width)
+# # Get the filter coefficients (taps) and the number of taps
+# template_taps, num_template_taps = getTaps(sample_rate, stop_Hz, A, width)
 
-# Create a new filter for the template to avoid state contamination from the previous filter's delay line
-filter2 = ff.FIRfilter(taps)
+# # Create a new filter for the template to avoid state contamination from the previous filter's delay line
+# filter2 = ff.FIRfilter(taps)
 
-# Simulate real-time filtering of the ECG template
-filtered_ecg_template = np.zeros(len(ecg_template))
-for i in range(len(ecg_template)):
-    filtered_ecg_template[i] = filter2.dofilter(ecg_template[i])
+# # Simulate real-time filtering of the ECG template
+# filtered_ecg_template = np.zeros(len(ecg_template))
+# for i in range(len(ecg_template)):
+#     filtered_ecg_template[i] = filter2.dofilter(ecg_template[i])
 
-filtered_ecg_template = filtered_ecg_template[num_taps:]  # Extract one PQRST complex for matching
-filtered_ecg_template = filtered_ecg_template[::-1]       # Reverse for cross-correlation
-t2 = np.linspace(0, measurement_time, len(ecg_template))
-t3 = np.linspace(0, measurement_time, len(filtered_ecg_template))
+# filtered_ecg_template = filtered_ecg_template[num_taps:]  # Extract one PQRST complex for matching
+# filtered_ecg_template = filtered_ecg_template[::-1]       # Reverse for cross-correlation
+# t2 = np.linspace(0, measurement_time, len(ecg_template))
+# t3 = np.linspace(0, measurement_time, len(filtered_ecg_template))
 
 
 
