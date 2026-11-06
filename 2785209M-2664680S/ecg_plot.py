@@ -9,7 +9,6 @@ file_name = "James_ecg_1.tsv"
 tsv = np.loadtxt(file_name, delimiter='\t')
 ecg_signal = tsv[:,8].copy()
 
-
 sample_rate = 250
 num_samples = len(ecg_signal)
 measurement_time = num_samples / sample_rate

@@ -62,7 +62,6 @@ def getTaps(sampling_rate, stop_bands, A, transition_width):
     buffer = h.copy()
     split = num_taps - m
 
-    # Shift edges to the middle
     h[0:m] = buffer[split:num_taps]
     h[m:num_taps] = buffer[0:split]
 
