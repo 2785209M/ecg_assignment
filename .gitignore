@@ -9,6 +9,9 @@ __pycache__/
 # images
 images/*.svg
 
+#report
+report.pdf
+
 # LaTeX core build and log files
 *.aux
 *.bbl
