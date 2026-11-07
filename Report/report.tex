@@ -150,7 +150,8 @@ signal thereafter. Additionally, the DC shift is also removed from the signal as
 However, the DC term was also found to slightly decrease the strength of the T wave as well as introducting a momentary trough immediately
 after it.\\
 Compared to the FIR filter the adaptive filter is able to perfectly remove the 50Hz mains noise and DC from the signal, whereas the FIR filter is
-only able to attenuate them. This, however, comes at the cost of an initial convergence time and a more computationally complex implementation.
+only able to attenuate them. Additionally, the ECG is not distorted at all by the adaptive filter, whereas a narrow bandstop FIR filter will always distort the ECG signal to some degree.
+This, however, comes at the cost of an initial convergence time and a more computationally complex implementation.
 In both cases, removal of the low frequency drift comes at the cost of some distortion of the PQRST wave, but this distortion was more 
 pronounced with the adaptive filter.
 
