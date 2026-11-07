@@ -54,5 +54,3 @@ plt.ylabel("Amplitude (V)")
 plt.xlabel("Time (s)")
 plt.show()
 plt.savefig(IMAGES / "ecg_unfiltered_time_domain_zoomed.svg", bbox_inches='tight')
-
-

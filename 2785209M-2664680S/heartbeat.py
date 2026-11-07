@@ -82,18 +82,25 @@ for i in range(num_samples):
 
 
 plt.figure()
-plt.title("ecg_matched_filtered_time_domain")
-plt.plot(t2, matched_filtered_ecg_signal)
-plt.savefig(IMAGES / "ecg_matched_filtered_time_domain.svg")
+plt.title("ecg_matched_filter_output vs filtered_ecg_time_domain")
+plt.plot(t2, matched_filtered_ecg_signal / np.max(matched_filtered_ecg_signal), label="Matched Filtered ECG")
+plt.plot(t2, filtered_ecg_signal / np.max(filtered_ecg_signal), label="Filtered ECG")
+plt.ylabel("Amplitude (V)")
+plt.xlabel("Time (s)")
+plt.savefig(IMAGES / "ecg_matched_vs_original.svg", bbox_inches='tight')
 
 plt.figure()
 plt.title(IMAGES / "heart_rate_time_domain")
 plt.plot(heartrate)
-plt.savefig(IMAGES / "heart_rate_time_domain.svg")
+plt.ylabel("Heart Rate (bpm)")
+plt.xlabel("Time (s)")
+plt.savefig(IMAGES / "heart_rate_time_domain.svg", bbox_inches='tight')
 
 plt.figure()
 plt.title("ecg_template_filtered_time_domain")
 plt.plot(t2[525:650], filtered_ecg_template)
-plt.savefig(IMAGES / "ecg_template_filtered_time_domain.svg")
+plt.ylabel("Amplitude (V)")
+plt.xlabel("Time (s)")
+plt.savefig(IMAGES / "ecg_template_filtered_time_domain.svg", bbox_inches='tight')
 
 plt.show()

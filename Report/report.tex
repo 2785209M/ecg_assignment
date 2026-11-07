@@ -109,16 +109,16 @@ In order to simulate realtime filtering of the data, a python class was created 
 \subsection{Filter Design}
 The raw ecg signal can be seen below:
 
-\includesvg[width=\columnwidth]{ecg_unfiltered_time_domain_whole}
-\includesvg[width=\columnwidth]{ecg_unfiltered_time_domain_zoomed}
+\includesvg[width=0.5\columnwidth]{ecg_unfiltered_time_domain_whole}
+\includesvg[width=0.5\columnwidth]{ecg_unfiltered_time_domain_zoomed}
 
 To filter our ECG signal, we used a bandpass filter with a lower cutoff frequency of 1Hz and an upper cutoff frequency of 45Hz. Although this
 does not completely remove low frequency drift from the signal, it was found that increasing the lower cut off frequency further would
 degrade the quality of the PQRST wave and so 1Hz was chosen as the optimal value to balance out these trade-offs. 
 It can also be seen that mains noise has been completely removed from the filtered signal:
 
-\includesvg[width=\columnwidth]{ecg_filtered_time_domain_whole}
-\includesvg[width=\columnwidth]{ecg_filtered_time_domain_zoomed}
+\includesvg[width=0.5\columnwidth]{ecg_filtered_time_domain_whole}
+\includesvg[width=0.5\columnwidth]{ecg_filtered_time_domain_zoomed}
 
 \section{Adaptive LMS Filter}
 The doFilterAdaptive function member extends the FIR filter class for adaptive filtering. The arguments to this function are signal, noise, and learningRate.
@@ -133,6 +133,7 @@ The signal argument is the signal that we are trying to remove from our ecg. The
 \text{coefficients}[i] = \text{coefficients}[i] + \text{learningRate} \cdot \text{error} \cdot \text{delay\_line}[i]
 \end{equation}
 
+In this way, the cofficients are updated until any noise, x(n), that is correlated with d(n) is removed from the signal.
 Our signal input is a 50Hz sin wave plus a DC shift of 0.3. The value of the DC shift was found experimentally with the goal of 
 removing the DC shift from the signal without degrading the quality of the PQRST wave. The learning rate was also found experimentally 
 such that the filter coefficients converge quickly without exploding. A dataflow diagram can be seen below:
@@ -141,8 +142,8 @@ such that the filter coefficients converge quickly without exploding. A dataflow
 
 As well as the output from the adaptive filter:
 
-\includesvg[width=\columnwidth]{ecg_adaptive_filtered_time_domain_whole}
-\includesvg[width=\columnwidth]{ecg_adaptive_filtered_time_domain_zoomed}
+\includesvg[width=0.5\columnwidth]{ecg_adaptive_filtered_time_domain_whole}
+\includesvg[width=0.5\columnwidth]{ecg_adaptive_filtered_time_domain_zoomed}
 
 It can be seen that although it takes a few seconds for the filter to converge, the 50Hz mains noise is completely removed from the
 signal thereafter. Additionally, the DC shift is also removed from the signal as well as the majority of the low frequency drift.
@@ -152,8 +153,6 @@ Compared to the FIR filter the adaptive filter is able to perfectly remove the 5
 only able to attenuate them. This, however, comes at the cost of an initial convergence time and a more computationally complex implementation.
 In both cases, removal of the low frequency drift comes at the cost of some distortion of the PQRST wave, but this distortion was more 
 pronounced with the adaptive filter.
-
-\subsection{Comparison with FIR Filter}
 
 \section{Heartbeat Detection}
 
@@ -165,15 +164,35 @@ to be more important for the matched filter to be working with signals without D
 PQRST wave.
 Next, an ideal PQRST wave was then extracted and reversed
 to use as the filter coefficients of the matched filter. The PQRST template has to be reversed in order for the convolution of the FIR
-filter to act as a correlation operation between the template and the ECG signal. The output from the matched filter is then squared to
+filter to act as a correlation operation between the template and the ECG signal. The selected template as well as the unfilteredm data from which it
+was taken are shown below:
+
+\includesvg[width=0.5\columnwidth]{ecg_raw_time_domain}
+\includesvg[width=0.5\columnwidth]{ecg_template_filtered_time_domain}
+
+The constant linear drift of the ecg signal we needed to obtain the template from can be seen here. This impacted the quality of the template
+that we were able to extract, but it was still sufficient for the purposes of heartbeat detection.
+
+The output from the matched filter is then squared to
 amplify the SNR\@. A threshold is set to detect the peaks of the output signal which correspond to heartbeats, and the heartrate is calculated 
-as the inverse of the time between detected peaks. A heuristic is applied by setting a cooldown time between detected peaks which limits
-the heartrate to 220bpm. This helps to avoid any false positives. A dataflow diagram can be seen below:\\
+as the inverse of the time between detected peaks. Peaks were detected using a threshold value of $3 \times 10^{-11}$V and a heuristic is applied by setting a cooldown time between detected peaks which limits
+the heartrate to 220bpm. This helps to avoid any false positives. The output from the matched filter as well as the heartrate detected
+were as follows:
+
+\includesvg[width=0.5\columnwidth]{ecg_matched_filtered_time_domain}
+\includesvg[width=0.5\columnwidth]{heart_rate_time_domain}
+
+By overlaying a normalised version of the matched filter output on top of the original ECG signal, it can be seen that the peaks of the matched filter output correspond to the R peaks of the ECG signal,
+meaning we have succesfully detected the heartbeats present in the ECG signal.
+
+\includesvg[width=\columnwidth]{ecg_matched_vs_original}
+
+The delay seen is simply the time it takes for the matched filter to process the signal (the group delay), and does not affect the accuracy of the heartbeat detection.
+
+A dataflow diagram of the process can be seen below:\\
 \\
 
 \includesvg[width=\columnwidth]{heartbeat_dataflow.drawio}
-
-\subsection{Subsection}
 
 \newpage
 \onecolumn
