@@ -107,7 +107,7 @@ These coefficients can now be passed into the \texttt{fir\_filter} class to simu
 \section{Simulation of Real-time Filtering}
 In order to simulate realtime filtering of the data, a python class was created to represent the FIR class. This class takes the taps (calculated from the filter design function) as it's sole argument. Additionally, the class has 3 data members; coefficients is an array of the filter's taps; num{\_}taps is the length of coefficients; And delay{\_}line is a double ended queue with a maximum length of num{\_}taps. A double ended queue was used as the data structure for the delay line because, when given a maximum length, it acts similarly to a ring buffer where adding a new value to a full queue causes one value to fall off the other end. This is an efficient implementation, because it does not require manual shifting of the delay line.\\ The function member used for simulating realtime processing is simply dofilter. This takes a scalar input of the newest sample in the data, appends it to the delay line and then loops through the delay line to calculate a cumulative sum of delay{\_}line[i] * coefficients[i]. It returns the result of this summation. To simulate realtime input to the filter in python, a for loop iterates through the ecg data and passes it sample by sample to the FIR filter for processing.
 \subsection{Filter Design}
-The raw ecg signal can be seen below:
+The raw ECG signal can be seen below:
 
 \includesvg[width=0.5\columnwidth]{ecg_unfiltered_time_domain_whole}
 \includesvg[width=0.5\columnwidth]{ecg_unfiltered_time_domain_zoomed}
@@ -121,8 +121,8 @@ It can also be seen that mains noise has been completely removed from the filter
 \includesvg[width=0.5\columnwidth]{ecg_filtered_time_domain_zoomed}
 
 \section{Adaptive LMS Filter}
-The doFilterAdaptive function member extends the FIR filter class for adaptive filtering. The arguments to this function are signal, noise, and learningRate.
-The signal argument is the signal that we are trying to remove from our ecg. The noise argument is our noisy ecg signal, and learningRate
+The doFilterAdaptive function member extends the FIR filter class for adaptive filtering. The arguments to this function are signal (x(n)), noise (d(n)), and learningRate.
+The signal argument is the signal that we are trying to remove from our ECG. The noise argument is our noisy ECG signal, and learningRate
  is the learning rate/step size of our adaptive algorithm. The function initially calls the doFilter function on the signal for
  the forward pass before updating the weights of the filter using a least mean squares method:
 
@@ -151,7 +151,7 @@ However, the DC term was also found to slightly decrease the strength of the T w
 after it.\\
 Compared to the FIR filter the adaptive filter is able to perfectly remove the 50Hz mains noise and DC from the signal, whereas the FIR filter is
 only able to attenuate them. Additionally, the ECG is not distorted at all by the adaptive filter, whereas a narrow bandstop FIR filter will always distort the ECG signal to some degree.
-This, however, comes at the cost of an initial convergence time and a more computationally complex implementation.
+The benefits of the adaptive fiter, however, come at the cost of an initial convergence time and a more computationally complex implementation.
 In both cases, removal of the low frequency drift comes at the cost of some distortion of the PQRST wave, but this distortion was more 
 pronounced with the adaptive filter.
 
@@ -160,18 +160,18 @@ pronounced with the adaptive filter.
 Heartbeat was detected using a matched filter. This process requires a heartbeat template which can then be correlated with the 
 ECG signal to find the location of the heartbeats. The other team member's ECG signal was used to create this template. The ECG signal
 was first filtered using the FIR filter to remove low frequency drift and mains noise. The lower frequency cut off was increased from
-1Hz to 3Hz to remove more of the low frequency drift from the template. Although this diminishes the clarity of the PQRST wave, it was found
+1Hz to 3Hz to remove more of the low frequency drift from the ECG signal and the template signal. Although this diminishes the clarity of the PQRST wave, it was found
 to be more important for the matched filter to be working with signals without DC and low frequency drift than it was to retain a clean
 PQRST wave.
-Next, an ideal PQRST wave was then extracted and reversed
+A PQRST wave was then extracted and reversed
 to use as the filter coefficients of the matched filter. The PQRST template has to be reversed in order for the convolution of the FIR
-filter to act as a correlation operation between the template and the ECG signal. The selected template as well as the unfilteredm data from which it
+filter to act as a correlation operation between the template and the ECG signal. The selected template as well as the unfiltered data from which it
 was taken are shown below:
 
 \includesvg[width=0.5\columnwidth]{ecg_raw_time_domain}
 \includesvg[width=0.5\columnwidth]{ecg_template_filtered_time_domain}
 
-The constant linear drift of the ecg signal we needed to obtain the template from can be seen here. This impacted the quality of the template
+The constant linear drift of the ECG signal we needed to obtain the template from can be seen here. This impacted the quality of the template
 that we were able to extract, but it was still sufficient for the purposes of heartbeat detection.
 
 The output from the matched filter is then squared to
@@ -183,7 +183,7 @@ were as follows:
 \includesvg[width=0.5\columnwidth]{ecg_matched_filtered_time_domain}
 \includesvg[width=0.5\columnwidth]{heart_rate_time_domain}
 
-BBy normalising the signals to make them easier to compare, it can be seen that the peaks of the matched filter output correspond to the R peaks of the ECG signal,
+By normalising the signals to make them easier to compare, it can be seen that the peaks of the matched filter output correspond to the R peaks of the ECG signal,
 meaning we have succesfully detected the heartbeats present in the ECG signal.
 
 \includesvg[width=\columnwidth]{ecg_matched_vs_original}
