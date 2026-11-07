@@ -40,10 +40,4 @@
 
 \PYG{n}{measurement\PYGZus{}time} \PYG{o}{=} \PYG{n}{num\PYGZus{}samples} \PYG{o}{/} \PYG{n}{sample\PYGZus{}rate}
 \PYG{n}{t} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{linspace}\PYG{p}{(}\PYG{l+m+mi}{0} \PYG{p}{,} \PYG{n}{measurement\PYGZus{}time} \PYG{p}{,} \PYG{n}{num\PYGZus{}samples}\PYG{p}{)}
-
-\PYG{n}{plt}\PYG{o}{.}\PYG{n}{figure}\PYG{p}{()}
-\PYG{n}{plt}\PYG{o}{.}\PYG{n}{title}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}ecg\PYGZus{}adaptive\PYGZus{}filtered\PYGZus{}time\PYGZus{}domain\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{plt}\PYG{o}{.}\PYG{n}{plot}\PYG{p}{(}\PYG{n}{t}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{1000}\PYG{p}{],} \PYG{n}{adaptive\PYGZus{}filtered\PYGZus{}ecg\PYGZus{}signal}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{:}\PYG{l+m+mi}{1000}\PYG{p}{])}
-\PYG{n}{plt}\PYG{o}{.}\PYG{n}{savefig}\PYG{p}{(}\PYG{n}{IMAGES} \PYG{o}{/} \PYG{l+s+s2}{\PYGZdq{}ecg\PYGZus{}adaptive\PYGZus{}filtered\PYGZus{}time\PYGZus{}domain.svg\PYGZdq{}}\PYG{p}{)}
-\PYG{n}{plt}\PYG{o}{.}\PYG{n}{show}\PYG{p}{()}
 \end{Verbatim}

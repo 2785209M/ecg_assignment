@@ -365,11 +365,6 @@ for i in range(num_samples):
 
 measurement_time = num_samples / sample_rate
 t = np.linspace(0 , measurement_time , num_samples)
-
-plt.figure()
-plt.title("ecg_filtered_time_domain")
-plt.plot(t, filtered_ecg_signal)
-plt.savefig(IMAGES / "ecg_filtered_time_domain.svg")
 \end{minted}
 
 \subsection{Adaptive Filter Implementation}
@@ -415,12 +410,6 @@ for i in range(num_samples):
 
 measurement_time = num_samples / sample_rate
 t = np.linspace(0 , measurement_time , num_samples)  
-
-plt.figure()
-plt.title("ecg_adaptive_filtered_time_domain")
-plt.plot(t[0:1000], adaptive_filtered_ecg_signal[0:1000])
-plt.savefig(IMAGES / "ecg_adaptive_filtered_time_domain.svg")
-plt.show()
 \end{minted}
 
 \subsection{Heartbeat detection}
@@ -506,18 +495,5 @@ for i in range(num_samples):
             heartrate.append(60 * sample_rate / (current_peak_index - last_peak_index))
 
         cooldown = cooldown_period
-
-
-plt.figure()
-plt.title("ecg_matched_filtered_time_domain")
-plt.plot(t2, matched_filtered_ecg_signal)
-plt.savefig(IMAGES / "ecg_matched_filtered_time_domain.svg")
-
-plt.figure()
-plt.title(IMAGES / "heart_rate_time_domain")
-plt.plot(heartrate)
-plt.savefig(IMAGES / "heart_rate_time_domain.svg")
-
-plt.show()
 \end{minted}
 \end{document}
