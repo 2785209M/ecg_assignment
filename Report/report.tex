@@ -3,7 +3,9 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{svg}
-\usepackage{minted}
+\usepackage{minted2}
+\usepackage{pdfpages}
+\usepackage{float}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em} % optional, keeps paragraphs visually separated
@@ -90,6 +92,7 @@ w[n] = \frac{I_0 \left( \beta \sqrt{1 - \left( \frac{n}{m} \right)^2} \right)}{I
 
 The FIR filter is then multiplied by the Kaiser window, to create the final array of coefficients, producing this impulse response in the time domain:
 
+\includesvg[width=\columnwidth, pretex=\tiny]{gettaps_flow_diagram.svg}
 \includesvg[width=0.5\columnwidth]{Kaiser_Impulse_Response}
 \includesvg[width=0.5\columnwidth]{Coefficients_Windowed_Frequency_Domain.svg}
 \includesvg[width=0.5\columnwidth]{impulse_response_unwindowed_time_domain.svg}
@@ -99,6 +102,8 @@ The FIR filter is then multiplied by the Kaiser window, to create the final arra
 
 As you can see, this impulse response has a large, narrow central peak and sidelobes that gradually decay to zero as they approach tap 0 and tap 383.
 This shows that our windowing function has successfully removed ringing due to the Gibbs Phenomenon.
+
+
 These coefficients can now be passed into the \texttt{fir\_filter} class to simulate realtime filtering.
 
 
@@ -311,10 +316,10 @@ class FIRfilter:
     def dofilteradaptive(self, signal, noise, learningRate):
             """
             Adaptive filtering using the LMS algorithm.
-- signal: The input signal, to be filtered out
-- desired: The desired signal to be used for adaptation AKA ecg
-- mu: The step size for adaptation
-- result: The filtered signal
+            - signal: The input signal, to be filtered out
+            - desired: The desired signal to be used for adaptation AKA ecg
+            - mu: The step size for adaptation
+            - result: The filtered signal
             """
 
             # perform a convolution sum to modify the amplitude and phase of the pure input signal
